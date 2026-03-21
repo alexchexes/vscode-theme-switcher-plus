@@ -1,17 +1,17 @@
 {
-  "name": "vscode-theme-switcher",
-  "displayName": "Theme Switcher",
-  "description": "Quickly switch between color themes.",
-  "publisher": "JanBn",
+  "name": "theme-switcher-plus",
+  "displayName": "Theme Switcher+",
+  "description": "Switch, preset, and automate VS Code themes with commands and theme lists.",
+  "publisher": "AlexChexes",
   "icon": "images/icon.png",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "galleryBanner": {
     "color": "#947500",
     "theme": "dark"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/JanBN/vscode-theme-switcher"
+    "url": "https://github.com/alexchexes/vscode-theme-switcher-plus"
   },
   "engines": {
     "vscode": "^1.100.0"
@@ -21,7 +21,17 @@
   ],
   "keywords": [
     "theme",
+    "switcher",
     "switch",
+    "change",
+    "select",
+    "hotkey",
+    "command",
+    "preset",
+    "automation",
+    "schedule",
+    "syntax",
+    "textmate",
     "cycle",
     "day",
     "night"
@@ -40,22 +50,22 @@
       {
         "command": "themeSwitcher.nextSelectedTheme",
         "title": "Next Selected Theme",
-        "category": "Theme Switcher"
+        "category": "Theme Switcher+"
       },
       {
         "command": "themeSwitcher.previousSelectedTheme",
         "title": "Previous Selected Theme",
-        "category": "Theme Switcher"
+        "category": "Theme Switcher+"
       },
       {
         "command": "themeSwitcher.nextTheme",
         "title": "Next Theme",
-        "category": "Theme Switcher"
+        "category": "Theme Switcher+"
       },
       {
         "command": "themeSwitcher.previousTheme",
         "title": "Previous Theme",
-        "category": "Theme Switcher"
+        "category": "Theme Switcher+"
       }
     ],
     "keybindings": [
@@ -82,7 +92,7 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Theme Switcher",
+      "title": "Theme Switcher+",
       "properties": {
         "themeSwitcher.themes": {
           "type": "array",

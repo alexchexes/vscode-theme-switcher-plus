@@ -169,7 +169,7 @@ async function setThemeByName(themeName: string): Promise<void> {
     .getConfiguration()
     .update(WORKBENCH_THEME_KEY, themeName, getConfigurationTarget());
 
-  vscode.window.setStatusBarMessage(`Theme Switcher: ${themeName}`, 2500);
+  vscode.window.setStatusBarMessage(`Theme Switcher+: ${themeName}`, 2500);
   refreshState();
 }
 

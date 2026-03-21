@@ -1,8 +1,8 @@
-# Theme Switcher
+# Theme Switcher+
 
 Switch between themes using keyboard shortcuts.
 
-The extension can cycle through all installed themes or through a curated list from settings.
+Theme Switcher+ can cycle through all installed themes or through a curated list from settings.
 
 ## Default shortcuts
 
@@ -44,6 +44,6 @@ Package the extension with:
 pnpm run package
 ```
 
-![](https://raw.githubusercontent.com/JanBN/vscode-theme-switcher/master/images/animation.gif)
+![](https://raw.githubusercontent.com/alexchexes/vscode-theme-switcher-plus/master/images/animation.gif)
 
 <div>Icons made by <a href="https://www.flaticon.com/authors/ocha" title="OCHA">OCHA</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
