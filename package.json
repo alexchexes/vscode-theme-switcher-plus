@@ -1,105 +1,124 @@
 {
-    "name": "vscode-theme-switcher",
-    "displayName": "Theme switcher",
-    "description": "Quickly switch between themes.",
-    "publisher": "JanBn",
-    "icon": "images/icon.png",
-    "version": "0.1.0",
-    "galleryBanner": {
-        "color": "#947500",
-        "theme": "dark"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/JanBN/vscode-theme-switcher"
-    },
-    "engines": {
-        "vscode": "^1.16.0"
-    },
-    "categories": [
-        "Other"
+  "name": "vscode-theme-switcher",
+  "displayName": "Theme Switcher",
+  "description": "Quickly switch between color themes.",
+  "publisher": "JanBn",
+  "icon": "images/icon.png",
+  "version": "0.1.0",
+  "galleryBanner": {
+    "color": "#947500",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JanBN/vscode-theme-switcher"
+  },
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "theme",
+    "switch",
+    "cycle",
+    "day",
+    "night"
+  ],
+  "license": "MIT",
+  "packageManager": "pnpm@10.24.0",
+  "main": "./out/extension.js",
+  "files": [
+    "out",
+    "images/icon.png",
+    "README.md",
+    "LICENSE"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "themeSwitcher.nextSelectedTheme",
+        "title": "Next Selected Theme",
+        "category": "Theme Switcher"
+      },
+      {
+        "command": "themeSwitcher.previousSelectedTheme",
+        "title": "Previous Selected Theme",
+        "category": "Theme Switcher"
+      },
+      {
+        "command": "themeSwitcher.nextTheme",
+        "title": "Next Theme",
+        "category": "Theme Switcher"
+      },
+      {
+        "command": "themeSwitcher.previousTheme",
+        "title": "Previous Theme",
+        "category": "Theme Switcher"
+      }
     ],
-    "keywords": [
-        "theme",
-        "switch",
-        "cycle",
-        "day",
-        "night"
+    "keybindings": [
+      {
+        "command": "themeSwitcher.previousSelectedTheme",
+        "key": "ctrl+shift+F9",
+        "mac": "cmd+shift+F9"
+      },
+      {
+        "command": "themeSwitcher.nextSelectedTheme",
+        "key": "ctrl+shift+F10",
+        "mac": "cmd+shift+F10"
+      },
+      {
+        "command": "themeSwitcher.previousTheme",
+        "key": "ctrl+shift+F11",
+        "mac": "cmd+shift+F11"
+      },
+      {
+        "command": "themeSwitcher.nextTheme",
+        "key": "ctrl+shift+F12",
+        "mac": "cmd+shift+F12"
+      }
     ],
-    "license": "SEE LICENSE IN LICENSE",
-    "activationEvents": [
-        "onCommand:themeSwitcher.nextSelectedTheme",
-        "onCommand:themeSwitcher.previousSelectedTheme",
-        "onCommand:themeSwitcher.nextTheme",
-        "onCommand:themeSwitcher.previousTheme"
-    ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "commands": [
-            {
-                "command": "themeSwitcher.nextSelectedTheme",
-                "title": "Next Theme (from separate list in config)"
-            },
-            {
-                "command": "themeSwitcher.previousSelectedTheme",
-                "title": "Previous Theme (from separate list in config)"
-            },
-            {
-                "command": "themeSwitcher.nextTheme",
-                "title": "Next Theme"
-            },
-            {
-                "command": "themeSwitcher.previousTheme",
-                "title": "Previous Theme"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "themeSwitcher.previousSelectedTheme",
-                "key": "ctrl+shift+F9",
-                "mac": "cmd+shift+F9"
-            },
-            {
-                "command": "themeSwitcher.nextSelectedTheme",
-                "key": "ctrl+shift+F10",
-                "mac": "cmd+shift+F10"
-            },
-            {
-                "command": "themeSwitcher.previousTheme",
-                "key": "ctrl+shift+F11",
-                "mac": "cmd+shift+F11"
-            },
-            {
-                "command": "themeSwitcher.nextTheme",
-                "key": "ctrl+shift+F12",
-                "mac": "cmd+shift+F12"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "Themes to switch in cycle",
-            "properties": {
-                "themeSwitcher.themesList": {
-                    "type": "string",
-                    "default": "Visual Studio Dark,Visual Studio Light",
-                    "description": "Selected theme names delimited by comma ('Visual Studio Dark,Visual Studio Light')"
-                }
-            }
+    "configuration": {
+      "type": "object",
+      "title": "Theme Switcher",
+      "properties": {
+        "themeSwitcher.themes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "Visual Studio Dark",
+            "Visual Studio Light"
+          ],
+          "markdownDescription": "Theme names cycled by the selected-theme commands."
+        },
+        "themeSwitcher.themesList": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Deprecated comma-separated theme list. Use `themeSwitcher.themes` instead.",
+          "deprecationMessage": "Use themeSwitcher.themes instead."
         }
-    },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
-        "@types/node": "^7.0.43",
-        "typescript": "^2.5.2",
-        "vscode": "^1.1.30"
-    },
-    "dependencies": {
-        "vsce": "^1.57.1"
+      }
     }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint .",
+    "check": "pnpm run lint && pnpm run compile",
+    "package": "pnpm exec vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@stylistic/eslint-plugin": "^2.9.0",
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "^3.7.1",
+    "eslint": "^9.13.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.39.0"
+  }
 }

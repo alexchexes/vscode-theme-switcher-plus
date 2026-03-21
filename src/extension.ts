@@ -1,141 +1,193 @@
-'use strict';
 import * as vscode from 'vscode';
-import { ConfigurationTarget } from 'vscode';
 
-const WORKBENCH_KEY = "workbench";
-const COLOR_THEME_KEY = "colorTheme";
-const WORKBENCH_THEME_KEY = WORKBENCH_KEY + "." + COLOR_THEME_KEY;
-const EXTENSION_PREFIX = "themeSwitcher";
+const WORKBENCH_KEY = 'workbench';
+const COLOR_THEME_KEY = 'colorTheme';
+const WORKBENCH_THEME_KEY = `${WORKBENCH_KEY}.${COLOR_THEME_KEY}`;
+const EXTENSION_PREFIX = 'themeSwitcher';
 
-let _allInstalledThemes: any[];
-let _currentIndexInAllInstalledThemes: number = -1;
-
-let _themesListString: string;
-let _themesListArray: string[];
-let _currentSelectedThemeIndex = -1;
-
-export function activate(context: vscode.ExtensionContext) {
-  let disposable = vscode.workspace.onDidChangeConfiguration(loadSettings, this);
-
-  loadSettings();
-  loadAllThemes();
-
-  vscode.commands.registerCommand(EXTENSION_PREFIX + '.nextSelectedTheme', () => {
-    setNextSelectedTheme();
-  });
-
-  vscode.commands.registerCommand(EXTENSION_PREFIX + '.previousSelectedTheme', () => {
-    setPreviousSelectedTheme();
-  });
-
-  vscode.commands.registerCommand(EXTENSION_PREFIX + '.nextTheme', () => {
-    setPreviousTheme();
-  });
-
-  vscode.commands.registerCommand(EXTENSION_PREFIX + '.previousTheme', () => {
-    setNextTheme();
-  });
-
-  context.subscriptions.push(disposable);
+interface ContributedTheme {
+  id?: string;
+  label?: string;
+  uiTheme?: string;
 }
 
-function loadAllThemes() {
-  let installedThemes = vscode.extensions.all.filter(x => x.packageJSON.contributes && x.packageJSON.contributes.themes).map(x => x.packageJSON.contributes.themes);
-  installedThemes = [].concat.apply([], installedThemes);
-  const darkThemes = installedThemes.filter(x => x.uiTheme == "vs-dark");
-  const lightThemes = installedThemes.filter(x => x.uiTheme == "vs");
-  _allInstalledThemes = [...lightThemes, ...darkThemes];
+let allInstalledThemes: ContributedTheme[] = [];
+let currentIndexInAllInstalledThemes = -1;
 
-  let currentTheme = vscode.workspace.getConfiguration().get(WORKBENCH_THEME_KEY);
-  _currentIndexInAllInstalledThemes = _allInstalledThemes.map(x => x.id || x.label).indexOf(currentTheme.toString());
-}
+let selectedThemes: string[] = [];
+let currentSelectedThemeIndex = -1;
 
-function loadSettings() {
-  let extensionConfig = vscode.workspace.getConfiguration(EXTENSION_PREFIX);
-  _themesListString = extensionConfig.themesList;
-  _themesListArray = _themesListString.split(',').map(x => x.trim());
+export function activate(context: vscode.ExtensionContext): void {
+  refreshState();
 
-  let currentTheme = vscode.workspace.getConfiguration().get(WORKBENCH_THEME_KEY);
-  _currentSelectedThemeIndex = _themesListArray.indexOf(currentTheme.toString());
-}
-
-function setNextTheme() {
-  _currentIndexInAllInstalledThemes++;
-  setThemeByIndex();
-}
-
-function setPreviousTheme() {
-  _currentIndexInAllInstalledThemes--;
-  setThemeByIndex();
-}
-
-
-function setNextSelectedTheme() {
-  _currentSelectedThemeIndex++
-  setSelectedThemeByIndex();
-}
-
-function setPreviousSelectedTheme() {
-  _currentSelectedThemeIndex--
-  setSelectedThemeByIndex();
-}
-
-function setThemeByIndex() {
-  fixCurrentIndexInAllThemes();
-  const themeName = _allInstalledThemes[_currentIndexInAllInstalledThemes];
-  setThemeByName(themeName.id || themeName.label);
-}
-
-function fixCurrentIndexInAllThemes() {
-  if (_currentIndexInAllInstalledThemes >= _allInstalledThemes.length) {
-    _currentIndexInAllInstalledThemes = 0;
-  }
-  else
-    if (_currentIndexInAllInstalledThemes < 0) {
-      _currentIndexInAllInstalledThemes = _allInstalledThemes.length - 1;
-    }
-}
-
-function fixCurrentSelectedIndex() {
-  if (_currentSelectedThemeIndex >= _themesListArray.length) {
-    _currentSelectedThemeIndex = 0;
-  }
-  else
-    if (_currentSelectedThemeIndex < 0) {
-      _currentSelectedThemeIndex = _themesListArray.length - 1;
-    }
-}
-
-function setSelectedThemeByIndex() {
-  fixCurrentSelectedIndex();
-  const themeName = _themesListArray[_currentSelectedThemeIndex];
-  setThemeByName(themeName);
-}
-
-function setThemeByName(themeName: string) {
-  const confTarget = getConfigurationTarget();
-  vscode.workspace.getConfiguration().update(WORKBENCH_THEME_KEY, themeName, confTarget);
-  vscode.window.showInformationMessage(themeName);
-}
-
-function getConfigurationTarget(): ConfigurationTarget {
-  const conf = vscode.workspace.getConfiguration(WORKBENCH_KEY);
-  const info = conf.inspect(COLOR_THEME_KEY);
-  let target: vscode.ConfigurationTarget = vscode.ConfigurationTarget.Global;
-  if (info) {
-    if (info.workspaceFolderValue) {
-      target = vscode.ConfigurationTarget.WorkspaceFolder;
-    } else if (info.workspaceValue) {
-      target = vscode.ConfigurationTarget.Workspace;
-    } else if (info.globalValue) {
-      target = vscode.ConfigurationTarget.Global;
-    } else if (info.defaultValue) {
-      // setting not yet used: store setting in workspace
-      if (vscode.workspace.workspaceFolders) {
-        target = vscode.ConfigurationTarget.Workspace;
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (
+        event.affectsConfiguration(EXTENSION_PREFIX) ||
+        event.affectsConfiguration(WORKBENCH_THEME_KEY)
+      ) {
+        refreshState();
       }
+    }),
+    vscode.commands.registerCommand(`${EXTENSION_PREFIX}.nextSelectedTheme`, async () => {
+      await setNextSelectedTheme();
+    }),
+    vscode.commands.registerCommand(`${EXTENSION_PREFIX}.previousSelectedTheme`, async () => {
+      await setPreviousSelectedTheme();
+    }),
+    vscode.commands.registerCommand(`${EXTENSION_PREFIX}.nextTheme`, async () => {
+      await setNextTheme();
+    }),
+    vscode.commands.registerCommand(`${EXTENSION_PREFIX}.previousTheme`, async () => {
+      await setPreviousTheme();
+    }),
+  );
+}
+
+function refreshState(): void {
+  allInstalledThemes = loadAllThemes();
+  selectedThemes = loadConfiguredThemes();
+
+  const currentThemeName = getCurrentThemeName();
+  currentIndexInAllInstalledThemes = allInstalledThemes
+    .map((theme) => resolveThemeName(theme))
+    .findIndex((themeName) => themeName === currentThemeName);
+  currentSelectedThemeIndex = selectedThemes.indexOf(currentThemeName);
+}
+
+function loadAllThemes(): ContributedTheme[] {
+  const installedThemes = vscode.extensions.all.flatMap((extension) => {
+    const contributes = extension.packageJSON.contributes as { themes?: ContributedTheme[] } | undefined;
+    return contributes?.themes ?? [];
+  });
+
+  const lightThemes = installedThemes.filter((theme) => theme.uiTheme === 'vs');
+  const darkThemes = installedThemes.filter((theme) => theme.uiTheme === 'vs-dark');
+  const remainingThemes = installedThemes.filter(
+    (theme) => theme.uiTheme !== 'vs' && theme.uiTheme !== 'vs-dark',
+  );
+
+  const seenThemes = new Set<string>();
+
+  return [...lightThemes, ...darkThemes, ...remainingThemes].filter((theme) => {
+    const themeName = resolveThemeName(theme);
+    if (!themeName || seenThemes.has(themeName)) {
+      return false;
     }
+
+    seenThemes.add(themeName);
+    return true;
+  });
+}
+
+function loadConfiguredThemes(): string[] {
+  const extensionConfig = vscode.workspace.getConfiguration(EXTENSION_PREFIX);
+  const configuredThemes = extensionConfig.get<string[]>('themes', []);
+
+  if (configuredThemes.length > 0) {
+    return configuredThemes.map((themeName) => themeName.trim()).filter(Boolean);
   }
 
-  return target;
+  const legacyThemesList = extensionConfig.get<string>('themesList', '');
+  return legacyThemesList
+    .split(',')
+    .map((themeName) => themeName.trim())
+    .filter(Boolean);
+}
+
+function getCurrentThemeName(): string {
+  return vscode.workspace.getConfiguration().get<string>(WORKBENCH_THEME_KEY) ?? '';
+}
+
+function resolveThemeName(theme: ContributedTheme): string {
+  return theme.id ?? theme.label ?? '';
+}
+
+async function setNextTheme(): Promise<void> {
+  refreshState();
+  currentIndexInAllInstalledThemes += 1;
+  await setThemeByIndex();
+}
+
+async function setPreviousTheme(): Promise<void> {
+  refreshState();
+  currentIndexInAllInstalledThemes -= 1;
+  await setThemeByIndex();
+}
+
+async function setNextSelectedTheme(): Promise<void> {
+  refreshState();
+  currentSelectedThemeIndex += 1;
+  await setSelectedThemeByIndex();
+}
+
+async function setPreviousSelectedTheme(): Promise<void> {
+  refreshState();
+  currentSelectedThemeIndex -= 1;
+  await setSelectedThemeByIndex();
+}
+
+async function setThemeByIndex(): Promise<void> {
+  if (allInstalledThemes.length === 0) {
+    void vscode.window.showWarningMessage('No installed themes were found.');
+    return;
+  }
+
+  currentIndexInAllInstalledThemes = normalizeIndex(
+    currentIndexInAllInstalledThemes,
+    allInstalledThemes.length,
+  );
+
+  const themeName = resolveThemeName(allInstalledThemes[currentIndexInAllInstalledThemes]);
+  await setThemeByName(themeName);
+}
+
+async function setSelectedThemeByIndex(): Promise<void> {
+  if (selectedThemes.length === 0) {
+    void vscode.window.showWarningMessage(
+      'Configure themeSwitcher.themes to use the selected-theme commands.',
+    );
+    return;
+  }
+
+  currentSelectedThemeIndex = normalizeIndex(currentSelectedThemeIndex, selectedThemes.length);
+
+  await setThemeByName(selectedThemes[currentSelectedThemeIndex]);
+}
+
+function normalizeIndex(index: number, length: number): number {
+  return ((index % length) + length) % length;
+}
+
+async function setThemeByName(themeName: string): Promise<void> {
+  if (!themeName) {
+    void vscode.window.showWarningMessage('The selected theme could not be resolved.');
+    return;
+  }
+
+  await vscode.workspace
+    .getConfiguration()
+    .update(WORKBENCH_THEME_KEY, themeName, getConfigurationTarget());
+
+  vscode.window.setStatusBarMessage(`Theme Switcher: ${themeName}`, 2500);
+  refreshState();
+}
+
+function getConfigurationTarget(): vscode.ConfigurationTarget {
+  const config = vscode.workspace.getConfiguration(WORKBENCH_KEY);
+  const info = config.inspect<string>(COLOR_THEME_KEY);
+
+  if (info?.workspaceValue !== undefined) {
+    return vscode.ConfigurationTarget.Workspace;
+  }
+
+  if (info?.globalValue !== undefined) {
+    return vscode.ConfigurationTarget.Global;
+  }
+
+  if (vscode.workspace.workspaceFolders?.length) {
+    return vscode.ConfigurationTarget.Workspace;
+  }
+
+  return vscode.ConfigurationTarget.Global;
 }

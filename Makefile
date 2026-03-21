@@ -1,2 +1,2 @@
 publish:
-	vsce publish
+	pnpm exec vsce publish --no-dependencies

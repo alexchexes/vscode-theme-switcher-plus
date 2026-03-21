@@ -1,31 +1,49 @@
-# Theme switcher
+# Theme Switcher
 
 Switch between themes using keyboard shortcuts.
-You can switch between all installed themes or between themes defined in settings.
 
-## Use case
-I switch between 3 or 4 light themes during day and 2 night themes in the night. Depending on the light conditions.
+The extension can cycle through all installed themes or through a curated list from settings.
 
+## Default shortcuts
 
-## Features
+#### Previous theme - `Ctrl+Shift+F11`
+Finds the previous installed theme and selects it.
 
-#### Previous theme - CTRL+SHIFT+F11
-Finds previous theme in your all installed themes and selects it.
+#### Next theme - `Ctrl+Shift+F12`
+Finds the next installed theme and selects it.
 
-#### Next theme - CTRL+SHIFT+F11
-Finds next theme in your all installed themes and selects it.
+#### Previous selected theme - `Ctrl+Shift+F9`
+Finds the previous theme in your configured list and selects it.
 
-#### Previous Theme (from separate list in settings) - CTRL+SHIFT+F9
-Finds previous theme in your defined list and selects it.
-#### Next Theme (from separate list in settings) - CTRL+SHIFT+F10
-Finds next theme in your defined list and selects it.
+#### Next selected theme - `Ctrl+Shift+F10`
+Finds the next theme in your configured list and selects it.
 
-## Extension Settings
+## Settings
 
-You can define your extensions list in this setting
+Configure the curated theme list with:
 
-`"themeSwitcher.themesList": "Visual Studio Dark,Visual Studio Light"`
+```json
+"themeSwitcher.themes": [
+  "Visual Studio Dark",
+  "Visual Studio Light"
+]
+```
+
+The legacy `themeSwitcher.themesList` comma-separated setting is still supported for compatibility, but it is deprecated.
+
+## Development
+
+```bash
+pnpm install
+pnpm run check
+```
+
+Package the extension with:
+
+```bash
+pnpm run package
+```
 
 ![](https://raw.githubusercontent.com/JanBN/vscode-theme-switcher/master/images/animation.gif)
 
-<div>Icons made by <a href="https://www.flaticon.com/authors/ocha" title="OCHA">OCHA</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+<div>Icons made by <a href="https://www.flaticon.com/authors/ocha" title="OCHA">OCHA</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
