@@ -1,8 +1,8 @@
 # Theme Switcher+
 
-Switch between themes using keyboard shortcuts.
+Switch between themes using keyboard shortcuts and commands.
 
-Theme Switcher+ can cycle through all installed themes or through a curated list from settings.
+Theme Switcher+ can cycle through all installed themes, a primary theme list, or a secondary theme list. It can also switch directly to a specific theme and target either global or workspace settings.
 
 ## Default shortcuts
 
@@ -18,18 +18,60 @@ Finds the previous theme in your configured list and selects it.
 #### Next selected theme - `Ctrl+Shift+F10`
 Finds the next theme in your configured list and selects it.
 
+#### Secondary list commands
+`Theme Switcher+: Next Secondary Theme` and `Theme Switcher+: Previous Secondary Theme` are available without default shortcuts.
+
 ## Settings
 
-Configure the curated theme list with:
+Configure the primary and secondary lists with:
 
 ```json
-"themeSwitcher.themes": [
+"themeSwitcher.primaryThemes": [
   "Visual Studio Dark",
   "Visual Studio Light"
+],
+"themeSwitcher.secondaryThemes": [
+  "Monokai",
+  "Default Dark+"
 ]
 ```
 
-The legacy `themeSwitcher.themesList` comma-separated setting is still supported for compatibility, but it is deprecated.
+The legacy `themeSwitcher.themes` and `themeSwitcher.themesList` settings are still supported for compatibility, but both are deprecated in favor of `themeSwitcher.primaryThemes`.
+
+## Command args
+
+Use `themeSwitcher.setTheme` to switch directly to a theme:
+
+```json
+{
+  "key": "ctrl+alt+1",
+  "command": "themeSwitcher.setTheme",
+  "args": {
+    "theme": "Default Dark+",
+    "target": "global"
+  }
+}
+```
+
+Use `themeSwitcher.cycleThemes` to cycle a specific source and target:
+
+```json
+{
+  "key": "ctrl+alt+2",
+  "command": "themeSwitcher.cycleThemes",
+  "args": {
+    "source": "secondary",
+    "direction": "next",
+    "target": "global"
+  }
+}
+```
+
+Supported values:
+
+- `source`: `installed`, `primary`, `secondary`
+- `direction`: `next`, `previous`
+- `target`: `auto`, `global`, `workspace`
 
 ## Development
 

@@ -1,7 +1,7 @@
 {
   "name": "theme-switcher-plus",
   "displayName": "Theme Switcher+",
-  "description": "Switch, preset, and automate VS Code themes with commands and theme lists.",
+  "description": "Use hotkeys to change themes or cycle through theme lists.",
   "publisher": "AlexChexes",
   "icon": "images/icon.png",
   "version": "0.3.0",
@@ -22,19 +22,23 @@
   "keywords": [
     "theme",
     "switcher",
+    "hotkey",
     "switch",
+    "command",
+    "toggle",
+    "cycle",
     "change",
     "select",
-    "hotkey",
-    "command",
+    "list",
+    "global",
+    "workspace",
     "preset",
-    "automation",
-    "schedule",
     "syntax",
     "textmate",
-    "cycle",
     "day",
-    "night"
+    "night",
+    "dark",
+    "light"
   ],
   "license": "MIT",
   "packageManager": "pnpm@10.24.0",
@@ -65,6 +69,26 @@
       {
         "command": "themeSwitcher.previousTheme",
         "title": "Previous Theme",
+        "category": "Theme Switcher+"
+      },
+      {
+        "command": "themeSwitcher.nextSecondaryTheme",
+        "title": "Next Secondary Theme",
+        "category": "Theme Switcher+"
+      },
+      {
+        "command": "themeSwitcher.previousSecondaryTheme",
+        "title": "Previous Secondary Theme",
+        "category": "Theme Switcher+"
+      },
+      {
+        "command": "themeSwitcher.cycleThemes",
+        "title": "Cycle Themes",
+        "category": "Theme Switcher+"
+      },
+      {
+        "command": "themeSwitcher.setTheme",
+        "title": "Set Theme",
         "category": "Theme Switcher+"
       }
     ],
@@ -99,17 +123,34 @@
           "items": {
             "type": "string"
           },
+          "default": [],
+          "markdownDescription": "Deprecated primary theme list. Use `themeSwitcher.primaryThemes` instead.",
+          "deprecationMessage": "Use themeSwitcher.primaryThemes instead."
+        },
+        "themeSwitcher.primaryThemes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
           "default": [
             "Visual Studio Dark",
             "Visual Studio Light"
           ],
-          "markdownDescription": "Theme names cycled by the selected-theme commands."
+          "markdownDescription": "Theme names cycled by the primary-list commands."
+        },
+        "themeSwitcher.secondaryThemes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Theme names cycled by the secondary-list commands."
         },
         "themeSwitcher.themesList": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Deprecated comma-separated theme list. Use `themeSwitcher.themes` instead.",
-          "deprecationMessage": "Use themeSwitcher.themes instead."
+          "markdownDescription": "Deprecated comma-separated primary theme list. Use `themeSwitcher.primaryThemes` instead.",
+          "deprecationMessage": "Use themeSwitcher.primaryThemes instead."
         }
       }
     }
