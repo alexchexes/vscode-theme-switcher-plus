@@ -1,6 +1,7 @@
 export type ThemeScope = 'auto' | 'global' | 'workspace';
 export type CycleDirection = 'next' | 'previous';
 export type InstalledThemeGroup = 'light' | 'dark' | 'highContrast';
+export type RandomCandidateFailureReason = 'allMissing' | 'currentOnly';
 
 export interface ContributedTheme {
   id?: string;
@@ -40,4 +41,10 @@ export interface SetThemeArgs {
 export interface CycleCandidateResult {
   resolvedThemeName?: string;
   skippedThemes: string[];
+}
+
+export interface RandomCandidateResult {
+  resolvedThemeName?: string;
+  skippedThemes: string[];
+  failureReason?: RandomCandidateFailureReason;
 }

@@ -15,6 +15,7 @@ import {
 } from './types';
 import {
   findCycleCandidate,
+  findRandomCandidate,
   formatThemeNames,
   getCurrentThemeName,
   getInstalledThemes,
@@ -170,17 +171,27 @@ function showSkippedThemesWarning(skippedThemes: readonly string[]): void {
   );
 }
 
+function getMissingThemeDetails(missingThemes: readonly string[]): string {
+  return missingThemes.length > 0
+    ? ` Missing: ${formatThemeNames(missingThemes)}`
+    : '';
+}
+
 function showAllThemesMissingWarning(
   sourceLabel: string,
   missingThemes: readonly string[],
 ): void {
-  const details =
-    missingThemes.length > 0
-      ? ` Missing: ${formatThemeNames(missingThemes)}`
-      : '';
-
   void vscode.window.showWarningMessage(
-    `None of the themes in the ${sourceLabel} are installed.${details}`,
+    `None of the themes in the ${sourceLabel} are installed.${getMissingThemeDetails(missingThemes)}`,
+  );
+}
+
+function showNoAlternativeThemesWarning(
+  message: string,
+  missingThemes: readonly string[] = [],
+): void {
+  void vscode.window.showWarningMessage(
+    `${message}${getMissingThemeDetails(missingThemes)}`,
   );
 }
 
@@ -296,6 +307,41 @@ async function cycleThemeNames(
   showSkippedThemesWarning(skippedThemes);
 }
 
+async function setRandomThemeName(
+  themeNames: readonly string[],
+  scope: ThemeScope,
+  installedThemes: ThemeDescriptor[],
+  sourceLabel: string,
+  noAlternativeMessage: string,
+): Promise<void> {
+  const currentThemeName = getCurrentThemeName(installedThemes);
+  const { resolvedThemeName, skippedThemes, failureReason } =
+    findRandomCandidate(themeNames, installedThemes, currentThemeName);
+
+  if (!resolvedThemeName) {
+    if (failureReason === 'allMissing') {
+      showAllThemesMissingWarning(sourceLabel, skippedThemes);
+      return;
+    }
+
+    showNoAlternativeThemesWarning(noAlternativeMessage, skippedThemes);
+    return;
+  }
+
+  await setThemeByName(resolvedThemeName, scope, installedThemes);
+  showSkippedThemesWarning(skippedThemes);
+}
+
+function getNoAlternativeInstalledThemeMessage(
+  group?: InstalledThemeGroup,
+): string {
+  if (group === undefined) {
+    return 'No other installed themes are available.';
+  }
+
+  return `No other ${getInstalledThemeSourceLabel(group)} are available.`;
+}
+
 async function nextOrPreviousInstalledThemeCommand(
   direction: CycleDirection,
   args: unknown,
@@ -324,6 +370,34 @@ async function nextOrPreviousInstalledThemeCommand(
     scope,
     installedThemes,
     getInstalledThemeSourceLabel(group),
+  );
+}
+
+async function randomInstalledThemeCommand(args: unknown): Promise<void> {
+  const { scope, group, invalidGroup } = parseInstalledThemeCommandArgs(args);
+  if (invalidGroup) {
+    void vscode.window.showWarningMessage(
+      `Invalid installed theme group '${invalidGroup}'. Use light, dark, or highContrast.`,
+    );
+    return;
+  }
+
+  const installedThemes = getInstalledThemes();
+  const themeNames = getInstalledThemeNames(installedThemes, group);
+
+  if (themeNames.length === 0) {
+    void vscode.window.showWarningMessage(
+      `No ${getInstalledThemeSourceLabel(group)} were found.`,
+    );
+    return;
+  }
+
+  await setRandomThemeName(
+    themeNames,
+    scope,
+    installedThemes,
+    getInstalledThemeSourceLabel(group),
+    getNoAlternativeInstalledThemeMessage(group),
   );
 }
 
@@ -360,6 +434,39 @@ async function nextOrPreviousThemeInListCommand(
     scope,
     installedThemes,
     getThemeListSourceLabel(themeList),
+  );
+}
+
+async function randomThemeInListCommand(args: unknown): Promise<void> {
+  const installedThemes = getInstalledThemes();
+  const { listId, scope } = parseThemeListCommandArgs(args);
+  const themeList = listId
+    ? getThemeListById(listId, installedThemes)
+    : await pickThemeList(installedThemes);
+
+  if (!themeList) {
+    if (listId) {
+      void vscode.window.showWarningMessage(
+        `Theme list '${listId}' is not configured.`,
+      );
+    }
+
+    return;
+  }
+
+  if (themeList.themes.length === 0) {
+    void vscode.window.showWarningMessage(
+      `Theme list '${themeList.id}' has no themes configured.`,
+    );
+    return;
+  }
+
+  await setRandomThemeName(
+    themeList.themes,
+    scope,
+    installedThemes,
+    getThemeListSourceLabel(themeList),
+    `No other themes are available in the ${getThemeListSourceLabel(themeList)}.`,
   );
 }
 
@@ -405,6 +512,30 @@ function registerThemeListCommand(
   });
 }
 
+function registerRandomInstalledThemeCommand(
+  context: vscode.ExtensionContext,
+): void {
+  registerCommand(
+    context,
+    `${EXTENSION_PREFIX}.randomInstalledTheme`,
+    async (args?: unknown) => {
+      await randomInstalledThemeCommand(args);
+    },
+  );
+}
+
+function registerRandomThemeInListCommand(
+  context: vscode.ExtensionContext,
+): void {
+  registerCommand(
+    context,
+    `${EXTENSION_PREFIX}.randomThemeInList`,
+    async (args?: unknown) => {
+      await randomThemeInListCommand(args);
+    },
+  );
+}
+
 export function registerCommands(context: vscode.ExtensionContext): void {
   registerInstalledThemeCommand(
     context,
@@ -416,6 +547,7 @@ export function registerCommands(context: vscode.ExtensionContext): void {
     `${EXTENSION_PREFIX}.previousInstalledTheme`,
     'previous',
   );
+  registerRandomInstalledThemeCommand(context);
   registerThemeListCommand(
     context,
     `${EXTENSION_PREFIX}.nextThemeInList`,
@@ -426,6 +558,7 @@ export function registerCommands(context: vscode.ExtensionContext): void {
     `${EXTENSION_PREFIX}.previousThemeInList`,
     'previous',
   );
+  registerRandomThemeInListCommand(context);
 
   registerCommand(
     context,

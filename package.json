@@ -88,6 +88,11 @@
         "category": "Theme Switcher+"
       },
       {
+        "command": "themeSwitcher.randomInstalledTheme",
+        "title": "Random Installed Theme",
+        "category": "Theme Switcher+"
+      },
+      {
         "command": "themeSwitcher.nextThemeInList",
         "title": "Next Theme In List",
         "category": "Theme Switcher+"
@@ -95,6 +100,11 @@
       {
         "command": "themeSwitcher.previousThemeInList",
         "title": "Previous Theme In List",
+        "category": "Theme Switcher+"
+      },
+      {
+        "command": "themeSwitcher.randomThemeInList",
+        "title": "Random Theme In List",
         "category": "Theme Switcher+"
       },
       {
@@ -131,7 +141,7 @@
             "properties": {
               "id": {
                 "type": "string",
-                "markdownDescription": "Stable list identifier used in `themeSwitcher.nextThemeInList` and `themeSwitcher.previousThemeInList` args."
+                "markdownDescription": "Stable list identifier used in `themeSwitcher.nextThemeInList`, `themeSwitcher.previousThemeInList`, and `themeSwitcher.randomThemeInList` args."
               },
               "themes": {
                 "type": "array",
@@ -144,7 +154,7 @@
             },
             "additionalProperties": false
           },
-          "markdownDescription": "Ordered custom theme lists. Use each list `id` with `themeSwitcher.nextThemeInList` or `themeSwitcher.previousThemeInList`."
+          "markdownDescription": "Ordered custom theme lists. Use each list `id` with `themeSwitcher.nextThemeInList`, `themeSwitcher.previousThemeInList`, or `themeSwitcher.randomThemeInList`."
         }
       }
     }

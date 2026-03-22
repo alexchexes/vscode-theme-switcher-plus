@@ -6,6 +6,7 @@ import {
   CycleCandidateResult,
   CycleDirection,
   InstalledThemeGroup,
+  RandomCandidateResult,
   ThemeDescriptor,
 } from './types';
 
@@ -228,6 +229,64 @@ export function findCycleCandidate(
   }
 
   return {
+    skippedThemes,
+  };
+}
+
+export function findRandomCandidate(
+  themeNames: readonly string[],
+  installedThemes: ThemeDescriptor[],
+  currentThemeName: string,
+  randomValue: number = Math.random(),
+): RandomCandidateResult {
+  const skippedThemes: string[] = [];
+  const seenSkippedThemes = new Set<string>();
+  const eligibleThemeNames: string[] = [];
+  const seenEligibleThemes = new Set<string>();
+  let hasCurrentThemeCandidate = false;
+
+  for (const themeName of themeNames) {
+    const resolvedThemeName = resolveRequestedThemeName(
+      themeName,
+      installedThemes,
+    );
+
+    if (!resolvedThemeName) {
+      if (!seenSkippedThemes.has(themeName)) {
+        seenSkippedThemes.add(themeName);
+        skippedThemes.push(themeName);
+      }
+
+      continue;
+    }
+
+    if (resolvedThemeName === currentThemeName) {
+      hasCurrentThemeCandidate = true;
+      continue;
+    }
+
+    if (seenEligibleThemes.has(resolvedThemeName)) {
+      continue;
+    }
+
+    seenEligibleThemes.add(resolvedThemeName);
+    eligibleThemeNames.push(resolvedThemeName);
+  }
+
+  if (eligibleThemeNames.length === 0) {
+    return {
+      skippedThemes,
+      failureReason: hasCurrentThemeCandidate ? 'currentOnly' : 'allMissing',
+    };
+  }
+
+  const candidateIndex = Math.min(
+    Math.floor(randomValue * eligibleThemeNames.length),
+    eligibleThemeNames.length - 1,
+  );
+
+  return {
+    resolvedThemeName: eligibleThemeNames[candidateIndex],
     skippedThemes,
   };
 }

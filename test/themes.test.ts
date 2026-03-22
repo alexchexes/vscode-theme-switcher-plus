@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
   findCycleCandidate,
+  findRandomCandidate,
   getInstalledThemes,
   getInstalledThemeNames,
   normalizeThemeNames,
@@ -104,6 +105,48 @@ describe('themes', () => {
       ),
     ).toEqual({
       skippedThemes: ['Missing Two', 'Missing One'],
+    });
+  });
+
+  it('picks a random installed theme while skipping missing entries and the current theme', () => {
+    expect(
+      findRandomCandidate(
+        ['Missing Theme', 'Default Dark+', 'Monokai'],
+        installedThemes,
+        'Default Dark+',
+        0,
+      ),
+    ).toEqual({
+      resolvedThemeName: 'Monokai',
+      skippedThemes: ['Missing Theme'],
+    });
+  });
+
+  it('reports current-only lists when random has no alternative theme to choose', () => {
+    expect(
+      findRandomCandidate(
+        ['Missing Theme', 'Default Dark+'],
+        installedThemes,
+        'Default Dark+',
+        0,
+      ),
+    ).toEqual({
+      skippedThemes: ['Missing Theme'],
+      failureReason: 'currentOnly',
+    });
+  });
+
+  it('reports fully missing lists when random has no installed themes to choose', () => {
+    expect(
+      findRandomCandidate(
+        ['Missing One', 'Missing Two'],
+        installedThemes,
+        'Default Dark+',
+        0,
+      ),
+    ).toEqual({
+      skippedThemes: ['Missing One', 'Missing Two'],
+      failureReason: 'allMissing',
     });
   });
 });

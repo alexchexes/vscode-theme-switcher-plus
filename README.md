@@ -7,6 +7,8 @@ You can configure shortcuts to:
 - cycle through all installed themes
 - cycle through installed themes within one of VS Code's built-in groups: light, dark, or high contrast
 - cycle through a specific list of themes configured in your `settings.json`
+- pick a random installed theme
+- pick a random theme from a specific list
 - switch to a specific theme
 - apply any of the above either globally or only in the current workspace
 
@@ -73,6 +75,20 @@ You can configure shortcuts to:
   "command": "themeSwitcher.previousInstalledTheme",
   "args": { "group": "dark" }
 },
+
+// Pick a random theme from installed themes
+{
+  "key": "ctrl+shift+f2",
+  "command": "themeSwitcher.randomInstalledTheme",
+  "args": { "group": "dark" } // omit "group" to pick from all installed themes
+},
+
+// Pick a random theme from a configured list:
+{
+  "key": "ctrl+shift+f7",
+  "command": "themeSwitcher.randomThemeInList",
+  "args": { "listId": "Favorite dark" }
+},
 ```
 
 The selected theme name is shown briefly in the status bar.
@@ -90,12 +106,12 @@ Installed-theme cycling is sorted alphabetically within each group: light, dark,
 
 When you define a shortcut in `keybindings.json`, you can pass command arguments.
 
-For `themeSwitcher.nextThemeInList` / `themeSwitcher.previousThemeInList`:
+For `themeSwitcher.nextThemeInList` / `themeSwitcher.previousThemeInList` / `themeSwitcher.randomThemeInList`:
 
 - `listId`: the list id defined in `themeSwitcher.themeLists[].id` in `settings.json`. Omit it to pick a list from the Command Palette.
 - `scope`: `auto`, `global`, `workspace`
 
-For `themeSwitcher.nextInstalledTheme` / `themeSwitcher.previousInstalledTheme`:
+For `themeSwitcher.nextInstalledTheme` / `themeSwitcher.previousInstalledTheme` / `themeSwitcher.randomInstalledTheme`:
 
 - `group`: `light`, `dark`, `highContrast`. Omit it to cycle through all installed themes.
 - `scope`: `auto`, `global`, `workspace`
