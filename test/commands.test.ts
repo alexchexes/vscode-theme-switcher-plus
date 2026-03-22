@@ -71,7 +71,7 @@ describe('commands', () => {
         target: ConfigurationTarget.Global,
       },
     ]);
-    expect(window.showInformationMessage).toHaveBeenCalledWith('Monokai');
+    expect(window.setStatusBarMessage).toHaveBeenCalledWith('Monokai', 2000);
   });
 
   it('warns when a requested list id is not configured', async () => {

@@ -14,6 +14,8 @@ Finds the previous installed theme and selects it.
 
 Finds the next installed theme and selects it.
 
+Successful theme switches show the selected theme name briefly in the status bar.
+
 ## Settings
 
 Configure custom lists with:

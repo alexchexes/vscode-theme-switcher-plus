@@ -22,6 +22,10 @@ import {
   resolveRequestedThemeName,
 } from './themes';
 
+const THEME_STATUS_MESSAGE_TIMEOUT_MS = 2000;
+
+let activeThemeStatusMessage: vscode.Disposable | undefined;
+
 function isString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
@@ -180,6 +184,14 @@ function showAllThemesMissingWarning(
   );
 }
 
+function showThemeStatusMessage(themeName: string): void {
+  activeThemeStatusMessage?.dispose();
+  activeThemeStatusMessage = vscode.window.setStatusBarMessage(
+    themeName,
+    THEME_STATUS_MESSAGE_TIMEOUT_MS,
+  );
+}
+
 async function pickThemeList(
   installedThemes: ThemeDescriptor[],
 ): Promise<ThemeList | undefined> {
@@ -256,7 +268,7 @@ async function setThemeByName(
     .getConfiguration()
     .update('workbench.colorTheme', resolvedThemeName, configurationTarget);
 
-  void vscode.window.showInformationMessage(resolvedThemeName);
+  showThemeStatusMessage(resolvedThemeName);
 }
 
 async function cycleThemeNames(

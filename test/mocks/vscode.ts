@@ -118,6 +118,9 @@ export const window = {
 
     return state.quickPickSelection;
   }),
+  setStatusBarMessage: vi.fn((_message: string, _hideAfterTimeout?: number) =>
+    createDisposable(),
+  ),
   showWarningMessage: vi.fn(async (message: string) => message),
 };
 
@@ -173,6 +176,7 @@ export function __resetMockVscode(): void {
   workspace.getConfiguration.mockClear();
   window.showInformationMessage.mockClear();
   window.showQuickPick.mockClear();
+  window.setStatusBarMessage.mockClear();
   window.showWarningMessage.mockClear();
 }
 
