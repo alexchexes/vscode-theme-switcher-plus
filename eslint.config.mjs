@@ -11,6 +11,15 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   ...tseslint.configs.stylistic,
   {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
+  {
     plugins: {
       '@stylistic': stylistic,
     },

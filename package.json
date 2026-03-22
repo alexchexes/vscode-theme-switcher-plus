@@ -161,7 +161,8 @@
     "watch": "tsc -watch -p ./",
     "lint": "eslint .",
     "check": "pnpm run lint && pnpm run compile",
-    "package": "pnpm exec vsce package --no-dependencies"
+    "package": "pnpm exec vsce package --no-dependencies",
+    "install-local": "pnpm run package && node scripts/install-local.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
