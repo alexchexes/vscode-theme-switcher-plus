@@ -52,16 +52,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "themeSwitcher.nextPrimaryTheme",
-        "title": "Next Primary Theme",
-        "category": "Theme Switcher+"
-      },
-      {
-        "command": "themeSwitcher.previousPrimaryTheme",
-        "title": "Previous Primary Theme",
-        "category": "Theme Switcher+"
-      },
-      {
         "command": "themeSwitcher.nextInstalledTheme",
         "title": "Next Installed Theme",
         "category": "Theme Switcher+"
@@ -69,16 +59,6 @@
       {
         "command": "themeSwitcher.previousInstalledTheme",
         "title": "Previous Installed Theme",
-        "category": "Theme Switcher+"
-      },
-      {
-        "command": "themeSwitcher.nextSecondaryTheme",
-        "title": "Next Secondary Theme",
-        "category": "Theme Switcher+"
-      },
-      {
-        "command": "themeSwitcher.previousSecondaryTheme",
-        "title": "Previous Secondary Theme",
         "category": "Theme Switcher+"
       },
       {
@@ -94,16 +74,6 @@
     ],
     "keybindings": [
       {
-        "command": "themeSwitcher.previousPrimaryTheme",
-        "key": "ctrl+shift+F9",
-        "mac": "cmd+shift+F9"
-      },
-      {
-        "command": "themeSwitcher.nextPrimaryTheme",
-        "key": "ctrl+shift+F10",
-        "mac": "cmd+shift+F10"
-      },
-      {
         "command": "themeSwitcher.previousInstalledTheme",
         "key": "ctrl+shift+F11",
         "mac": "cmd+shift+F11"
@@ -118,24 +88,32 @@
       "type": "object",
       "title": "Theme Switcher+",
       "properties": {
-        "themeSwitcher.primaryThemes": {
+        "themeSwitcher.themeLists": {
           "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "Visual Studio Dark",
-            "Visual Studio Light"
-          ],
-          "markdownDescription": "Theme names cycled by the primary-list commands."
-        },
-        "themeSwitcher.secondaryThemes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
           "default": [],
-          "markdownDescription": "Theme names cycled by the secondary-list commands."
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "themes"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "markdownDescription": "Stable list identifier used in `themeSwitcher.cycleThemes` args."
+              },
+              "themes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [],
+                "markdownDescription": "Theme names cycled by this list."
+              }
+            },
+            "additionalProperties": false
+          },
+          "markdownDescription": "Ordered custom theme lists. Use each list `id` with `themeSwitcher.cycleThemes`."
         }
       }
     }

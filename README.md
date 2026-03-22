@@ -2,7 +2,7 @@
 
 Switch between themes using keyboard shortcuts and commands.
 
-Theme Switcher+ can cycle through all installed themes, a primary theme list, or a secondary theme list. It can also switch directly to a specific theme and target either global or workspace settings.
+Theme Switcher+ can cycle through all installed themes or any configured theme list. It can also switch directly to a specific theme and write either global or workspace settings.
 
 ## Default shortcuts
 
@@ -12,27 +12,20 @@ Finds the previous installed theme and selects it.
 #### Next installed theme - `Ctrl+Shift+F12`
 Finds the next installed theme and selects it.
 
-#### Previous primary theme - `Ctrl+Shift+F9`
-Finds the previous theme in your primary list and selects it.
-
-#### Next primary theme - `Ctrl+Shift+F10`
-Finds the next theme in your primary list and selects it.
-
-#### Secondary list commands
-`Theme Switcher+: Next Secondary Theme` and `Theme Switcher+: Previous Secondary Theme` are available without default shortcuts.
-
 ## Settings
 
-Configure the primary and secondary lists with:
+Configure custom lists with:
 
 ```json
-"themeSwitcher.primaryThemes": [
-  "Visual Studio Dark",
-  "Visual Studio Light"
-],
-"themeSwitcher.secondaryThemes": [
-  "Monokai",
-  "Default Dark+"
+"themeSwitcher.themeLists": [
+  {
+    "id": "main",
+    "themes": ["Visual Studio Dark", "Visual Studio Light"]
+  },
+  {
+    "id": "grammar-check",
+    "themes": ["Monokai", "Default Dark+"]
+  }
 ]
 ```
 
@@ -46,30 +39,30 @@ Use `themeSwitcher.setTheme` to switch directly to a theme:
   "command": "themeSwitcher.setTheme",
   "args": {
     "theme": "Default Dark+",
-    "target": "global"
+    "scope": "global"
   }
 }
 ```
 
-Use `themeSwitcher.cycleThemes` to cycle a specific source and target:
+Use `themeSwitcher.cycleThemes` to cycle a specific configured list:
 
 ```json
 {
   "key": "ctrl+alt+2",
   "command": "themeSwitcher.cycleThemes",
   "args": {
-    "source": "secondary",
+    "listId": "grammar-check",
     "direction": "next",
-    "target": "global"
+    "scope": "global"
   }
 }
 ```
 
 Supported values:
 
-- `source`: `installed`, `primary`, `secondary`
+- `listId`: any configured list id; omit it to cycle installed themes
 - `direction`: `next`, `previous`
-- `target`: `auto`, `global`, `workspace`
+- `scope`: `auto`, `global`, `workspace`
 
 ## Development
 

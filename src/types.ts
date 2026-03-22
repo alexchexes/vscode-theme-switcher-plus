@@ -1,5 +1,4 @@
-export type ThemeSource = 'installed' | 'primary' | 'secondary';
-export type ThemeTarget = 'auto' | 'global' | 'workspace';
+export type ThemeScope = 'auto' | 'global' | 'workspace';
 export type CycleDirection = 'next' | 'previous';
 
 export interface ContributedTheme {
@@ -13,15 +12,21 @@ export interface ThemeDescriptor {
   aliases: Set<string>;
 }
 
+export interface ThemeList {
+  id: string;
+  normalizedId: string;
+  themes: string[];
+}
+
 export interface CycleThemesArgs {
-  source?: ThemeSource;
+  listId?: string;
   direction?: CycleDirection;
-  target?: ThemeTarget;
+  scope?: ThemeScope;
 }
 
 export interface SetThemeArgs {
   theme?: string;
-  target?: ThemeTarget;
+  scope?: ThemeScope;
 }
 
 export interface CycleCandidateResult {

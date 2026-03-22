@@ -1,21 +1,21 @@
 import * as vscode from 'vscode';
 
 import { COLOR_THEME_KEY, WORKBENCH_KEY } from './constants';
-import { ThemeTarget } from './types';
+import { ThemeScope } from './types';
 
 export function getConfigurationTarget(
-  target: ThemeTarget,
+  scope: ThemeScope,
 ): vscode.ConfigurationTarget | undefined {
-  if (target === 'global') {
+  if (scope === 'global') {
     return vscode.ConfigurationTarget.Global;
   }
 
-  if (target === 'workspace') {
+  if (scope === 'workspace') {
     if (vscode.workspace.workspaceFolders?.length) {
       return vscode.ConfigurationTarget.Workspace;
     }
 
-    void vscode.window.showWarningMessage('Open a workspace to use target=workspace.');
+    void vscode.window.showWarningMessage('Open a workspace to use scope=workspace.');
     return undefined;
   }
 
