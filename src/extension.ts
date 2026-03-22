@@ -486,7 +486,7 @@ async function setThemeByName(
     .getConfiguration()
     .update(WORKBENCH_THEME_KEY, resolvedThemeName, configurationTarget);
 
-  vscode.window.setStatusBarMessage(`Theme Switcher+: ${resolvedThemeName}`, 2500);
+  void vscode.window.showInformationMessage(resolvedThemeName);
 }
 
 function getConfigurationTarget(target: ThemeTarget): vscode.ConfigurationTarget | undefined {
