@@ -52,23 +52,23 @@
   "contributes": {
     "commands": [
       {
-        "command": "themeSwitcher.nextSelectedTheme",
-        "title": "Next Selected Theme",
+        "command": "themeSwitcher.nextPrimaryTheme",
+        "title": "Next Primary Theme",
         "category": "Theme Switcher+"
       },
       {
-        "command": "themeSwitcher.previousSelectedTheme",
-        "title": "Previous Selected Theme",
+        "command": "themeSwitcher.previousPrimaryTheme",
+        "title": "Previous Primary Theme",
         "category": "Theme Switcher+"
       },
       {
-        "command": "themeSwitcher.nextTheme",
-        "title": "Next Theme",
+        "command": "themeSwitcher.nextInstalledTheme",
+        "title": "Next Installed Theme",
         "category": "Theme Switcher+"
       },
       {
-        "command": "themeSwitcher.previousTheme",
-        "title": "Previous Theme",
+        "command": "themeSwitcher.previousInstalledTheme",
+        "title": "Previous Installed Theme",
         "category": "Theme Switcher+"
       },
       {
@@ -94,22 +94,22 @@
     ],
     "keybindings": [
       {
-        "command": "themeSwitcher.previousSelectedTheme",
+        "command": "themeSwitcher.previousPrimaryTheme",
         "key": "ctrl+shift+F9",
         "mac": "cmd+shift+F9"
       },
       {
-        "command": "themeSwitcher.nextSelectedTheme",
+        "command": "themeSwitcher.nextPrimaryTheme",
         "key": "ctrl+shift+F10",
         "mac": "cmd+shift+F10"
       },
       {
-        "command": "themeSwitcher.previousTheme",
+        "command": "themeSwitcher.previousInstalledTheme",
         "key": "ctrl+shift+F11",
         "mac": "cmd+shift+F11"
       },
       {
-        "command": "themeSwitcher.nextTheme",
+        "command": "themeSwitcher.nextInstalledTheme",
         "key": "ctrl+shift+F12",
         "mac": "cmd+shift+F12"
       }
@@ -118,15 +118,6 @@
       "type": "object",
       "title": "Theme Switcher+",
       "properties": {
-        "themeSwitcher.themes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "markdownDescription": "Deprecated primary theme list. Use `themeSwitcher.primaryThemes` instead.",
-          "deprecationMessage": "Use themeSwitcher.primaryThemes instead."
-        },
         "themeSwitcher.primaryThemes": {
           "type": "array",
           "items": {
@@ -145,12 +136,6 @@
           },
           "default": [],
           "markdownDescription": "Theme names cycled by the secondary-list commands."
-        },
-        "themeSwitcher.themesList": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "Deprecated comma-separated primary theme list. Use `themeSwitcher.primaryThemes` instead.",
-          "deprecationMessage": "Use themeSwitcher.primaryThemes instead."
         }
       }
     }

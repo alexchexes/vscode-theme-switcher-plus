@@ -40,10 +40,6 @@ function normalizeSource(source: unknown): ThemeSource {
     return source;
   }
 
-  if (source === 'selected') {
-    return 'primary';
-  }
-
   return 'installed';
 }
 
@@ -240,30 +236,24 @@ function registerCommand(
   context.subscriptions.push(vscode.commands.registerCommand(command, callback));
 }
 
+function registerCycleCommand(
+  context: vscode.ExtensionContext,
+  command: string,
+  source: ThemeSource,
+  direction: CycleDirection,
+): void {
+  registerCommand(context, command, async () => {
+    await cycleThemesCommand({ source, direction, target: 'auto' });
+  });
+}
+
 export function registerCommands(context: vscode.ExtensionContext): void {
-  registerCommand(context, `${EXTENSION_PREFIX}.nextSelectedTheme`, async () => {
-    await cycleThemesCommand({ source: 'primary', direction: 'next', target: 'auto' });
-  });
-
-  registerCommand(context, `${EXTENSION_PREFIX}.previousSelectedTheme`, async () => {
-    await cycleThemesCommand({ source: 'primary', direction: 'previous', target: 'auto' });
-  });
-
-  registerCommand(context, `${EXTENSION_PREFIX}.nextTheme`, async () => {
-    await cycleThemesCommand({ source: 'installed', direction: 'next', target: 'auto' });
-  });
-
-  registerCommand(context, `${EXTENSION_PREFIX}.previousTheme`, async () => {
-    await cycleThemesCommand({ source: 'installed', direction: 'previous', target: 'auto' });
-  });
-
-  registerCommand(context, `${EXTENSION_PREFIX}.nextSecondaryTheme`, async () => {
-    await cycleThemesCommand({ source: 'secondary', direction: 'next', target: 'auto' });
-  });
-
-  registerCommand(context, `${EXTENSION_PREFIX}.previousSecondaryTheme`, async () => {
-    await cycleThemesCommand({ source: 'secondary', direction: 'previous', target: 'auto' });
-  });
+  registerCycleCommand(context, `${EXTENSION_PREFIX}.nextPrimaryTheme`, 'primary', 'next');
+  registerCycleCommand(context, `${EXTENSION_PREFIX}.previousPrimaryTheme`, 'primary', 'previous');
+  registerCycleCommand(context, `${EXTENSION_PREFIX}.nextInstalledTheme`, 'installed', 'next');
+  registerCycleCommand(context, `${EXTENSION_PREFIX}.previousInstalledTheme`, 'installed', 'previous');
+  registerCycleCommand(context, `${EXTENSION_PREFIX}.nextSecondaryTheme`, 'secondary', 'next');
+  registerCycleCommand(context, `${EXTENSION_PREFIX}.previousSecondaryTheme`, 'secondary', 'previous');
 
   registerCommand(context, `${EXTENSION_PREFIX}.cycleThemes`, async (args?: unknown) => {
     await cycleThemesCommand(args);

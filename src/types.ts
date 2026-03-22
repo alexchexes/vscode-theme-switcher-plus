@@ -1,4 +1,4 @@
-export type ThemeSource = 'installed' | 'primary' | 'secondary' | 'selected';
+export type ThemeSource = 'installed' | 'primary' | 'secondary';
 export type ThemeTarget = 'auto' | 'global' | 'workspace';
 export type CycleDirection = 'next' | 'previous';
 

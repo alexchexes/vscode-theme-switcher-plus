@@ -6,17 +6,17 @@ Theme Switcher+ can cycle through all installed themes, a primary theme list, or
 
 ## Default shortcuts
 
-#### Previous theme - `Ctrl+Shift+F11`
+#### Previous installed theme - `Ctrl+Shift+F11`
 Finds the previous installed theme and selects it.
 
-#### Next theme - `Ctrl+Shift+F12`
+#### Next installed theme - `Ctrl+Shift+F12`
 Finds the next installed theme and selects it.
 
-#### Previous selected theme - `Ctrl+Shift+F9`
-Finds the previous theme in your configured list and selects it.
+#### Previous primary theme - `Ctrl+Shift+F9`
+Finds the previous theme in your primary list and selects it.
 
-#### Next selected theme - `Ctrl+Shift+F10`
-Finds the next theme in your configured list and selects it.
+#### Next primary theme - `Ctrl+Shift+F10`
+Finds the next theme in your primary list and selects it.
 
 #### Secondary list commands
 `Theme Switcher+: Next Secondary Theme` and `Theme Switcher+: Previous Secondary Theme` are available without default shortcuts.
@@ -35,8 +35,6 @@ Configure the primary and secondary lists with:
   "Default Dark+"
 ]
 ```
-
-The legacy `themeSwitcher.themes` and `themeSwitcher.themesList` settings are still supported for compatibility, but both are deprecated in favor of `themeSwitcher.primaryThemes`.
 
 ## Command args
 

@@ -92,13 +92,6 @@ export function normalizeThemeNames(
   return normalizedThemes;
 }
 
-export function parseLegacyThemeList(
-  themeList: string,
-  installedThemes: ThemeDescriptor[],
-): string[] {
-  return normalizeThemeNames(themeList.split(','), installedThemes);
-}
-
 export function getCurrentThemeName(installedThemes: ThemeDescriptor[]): string {
   const currentThemeName = vscode.workspace.getConfiguration().get<string>(WORKBENCH_THEME_KEY) ?? '';
   return resolveRequestedThemeName(currentThemeName, installedThemes) ?? currentThemeName;
