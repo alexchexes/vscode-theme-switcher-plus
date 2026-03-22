@@ -26,30 +26,39 @@ describe('themes', () => {
     __resetMockVscode();
   });
 
-  it('orders installed themes by UI group and removes duplicate resolved names', () => {
+  it('orders installed themes alphabetically within UI groups and removes duplicates', () => {
     __setInstalledThemes([
       { label: 'Monokai', uiTheme: 'vs-dark' },
-      { id: 'Solarized Light', uiTheme: 'vs' },
+      { id: 'Zebra Light', uiTheme: 'vs' },
       { id: 'HC Black', uiTheme: 'hc-black' },
+      { id: 'Abyss', uiTheme: 'vs-dark' },
+      { id: 'A Light', uiTheme: 'vs' },
       { id: 'HC Light', uiTheme: 'hc-light' },
       { id: 'Mystery Theme' },
+      { id: 'Another Mystery Theme' },
       { id: 'Monokai', label: 'Monokai', uiTheme: 'vs-dark' },
     ]);
 
     const themes = getInstalledThemes();
 
     expect(themes.map((theme) => theme.name)).toEqual([
-      'Solarized Light',
+      'A Light',
+      'Zebra Light',
+      'Abyss',
       'Monokai',
       'HC Black',
       'HC Light',
+      'Another Mystery Theme',
       'Mystery Theme',
     ]);
     expect(themes.map((theme) => theme.group)).toEqual([
       'light',
+      'light',
+      'dark',
       'dark',
       'highContrast',
       'highContrast',
+      undefined,
       undefined,
     ]);
     expect(getInstalledThemeNames(themes, 'highContrast')).toEqual([

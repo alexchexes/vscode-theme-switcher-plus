@@ -1,90 +1,115 @@
 # Theme Switcher+
 
-Switch between themes using keyboard shortcuts and commands.
+Use shortcuts or commands to switch VS Code themes.
 
-Theme Switcher+ can cycle through all installed themes or any configured theme list. It can also switch directly to a specific theme and write either global or workspace settings.
+You can configure shortcuts to:
 
-## Default shortcuts
+- cycle through all installed themes
+- cycle through installed themes within one of VS Code's built-in groups: light, dark, or high contrast
+- cycle through a specific list of themes configured in your `settings.json`
+- switch to a specific theme
+- apply any of the above either globally or only in the current workspace
 
-#### Previous installed theme - `Ctrl+Shift+F11`
+## Quick start
 
-Finds the previous installed theme and selects it.
+1. Add theme lists to your [user or workspace](https://code.visualstudio.com/docs/configure/settings) VS Code `settings.json`:
 
-#### Next installed theme - `Ctrl+Shift+F12`
-
-Finds the next installed theme and selects it.
-
-Successful theme switches show the selected theme name briefly in the status bar.
-
-## Settings
-
-Configure custom lists with:
-
-```json
+```jsonc
 "themeSwitcher.themeLists": [
   {
-    "id": "main",
-    "themes": ["Visual Studio Dark", "Visual Studio Light"]
+    "id": "Favorite dark", // any name you want; used in keybindings
+    "themes": [
+      "GitHub Dark Default", // Theme names must match the names shown in "Preferences: Color Theme"
+      "One Dark Pro",
+      "Dracula Theme"
+    ]
   },
   {
-    "id": "grammar-check",
-    "themes": ["Monokai", "Default Dark+"]
+    "id": "Favorite light",
+    "themes": [
+      "Slack Theme Hoth",
+      "Atom One Light"
+    ]
   }
 ]
 ```
 
-## Command args
-
-Use `themeSwitcher.setTheme` to switch directly to a theme:
+2. Add shortcuts in `keybindings.json`:
 
 ```jsonc
+// Cycle through a configured list:
 {
-  "key": "ctrl+alt+1",
-  "command": "themeSwitcher.setTheme",
-  "args": {
-    "theme": "Default Dark+",
-    "scope": "global", // default is `auto`
-  },
-}
-```
-
-Use `themeSwitcher.nextThemeInList` or `themeSwitcher.previousThemeInList` to cycle a specific configured list:
-
-```jsonc
-{
-  "key": "ctrl+alt+2",
+  "key": "ctrl+shift+f9",
   "command": "themeSwitcher.nextThemeInList",
   "args": {
-    "listId": "grammar-check",
-    "scope": "global", // default is `auto`
-  },
-}
-```
-
-Use `themeSwitcher.nextInstalledTheme` or `themeSwitcher.previousInstalledTheme` with `group` to cycle a built-in VS Code theme group:
-
-```jsonc
+    "listId": "Favorite dark", // list id defined in settings.json
+    "scope": "global" // settings target. Default is "auto"; see below.
+  }
+},
 {
-  "key": "ctrl+alt+3",
-  "command": "themeSwitcher.nextInstalledTheme",
+  "key": "ctrl+shift+f8",
+  "command": "themeSwitcher.previousThemeInList",
   "args": {
-    "group": "dark", // omit to cycle through all themes
-    "scope": "global", // default is `auto`
-  },
-}
+    "listId": "Favorite dark",
+    "scope": "global"
+  }
+},
+
+// Switch directly to a specific theme:
+{
+  "key": "ctrl+shift+f1",
+  "command": "themeSwitcher.setTheme",
+  "args": { "theme": "Default Dark+" }
+},
+
+// Cycle through installed themes:
+{
+  "key": "ctrl+shift+f4",
+  "command": "themeSwitcher.nextInstalledTheme",
+  "args": { "group": "dark" } // omit "group" to cycle through all installed themes
+},
+{
+  "key": "ctrl+shift+f3",
+  "command": "themeSwitcher.previousInstalledTheme",
+  "args": { "group": "dark" }
+},
 ```
 
-`scope: "auto"` means:
+The selected theme name is shown briefly in the status bar.
 
-- if `workbench.colorTheme` is already set in workspace settings, update workspace
-- if it is already set in global settings, update global
-- if it is unset, use workspace when a workspace is open, otherwise use global
+## Default shortcuts
 
-Supported values:
+Default shortcuts are intentionally minimal. Most shortcuts in this extension are meant to be user-defined so they can match your own theme lists and workflow.
 
-- `group`: `light`, `dark`, `highContrast` for installed-theme commands
-- `listId`: any configured list id; omit it in list commands to pick a list from the Command Palette
+- Previous installed theme - `Ctrl+Shift+F11`
+- Next installed theme - `Ctrl+Shift+F12`
+
+Installed-theme cycling is sorted alphabetically within each group: light, dark, high contrast, then any remaining themes. Theme-list cycling follows the order you define in `themeSwitcher.themeLists`.
+
+## Command args
+
+When you define a shortcut in `keybindings.json`, you can pass command arguments.
+
+For `themeSwitcher.nextThemeInList` / `themeSwitcher.previousThemeInList`:
+
+- `listId`: the list id defined in `themeSwitcher.themeLists[].id` in `settings.json`. Omit it to pick a list from the Command Palette.
 - `scope`: `auto`, `global`, `workspace`
+
+For `themeSwitcher.nextInstalledTheme` / `themeSwitcher.previousInstalledTheme`:
+
+- `group`: `light`, `dark`, `highContrast`. Omit it to cycle through all installed themes.
+- `scope`: `auto`, `global`, `workspace`
+
+For `themeSwitcher.setTheme`:
+
+- `theme`: the exact theme name to switch to
+- `scope`: `auto`, `global`, `workspace`
+
+How `scope: "auto"` works:
+
+- if `workbench.colorTheme` is already set in workspace settings, update workspace settings
+- if it is already set in global settings, update global settings
+- if it is unset, use workspace settings when a workspace is open; otherwise use global settings
 
 ## Development
 

@@ -17,6 +17,16 @@ function resolveContributedThemeName(theme: ContributedTheme): string {
   return theme.id ?? theme.label ?? '';
 }
 
+function sortThemesByName(
+  themes: readonly ContributedTheme[],
+): ContributedTheme[] {
+  return [...themes].sort((leftTheme, rightTheme) =>
+    resolveContributedThemeName(leftTheme).localeCompare(
+      resolveContributedThemeName(rightTheme),
+    ),
+  );
+}
+
 function resolveInstalledThemeGroup(
   theme: ContributedTheme,
 ): InstalledThemeGroup | undefined {
@@ -41,19 +51,25 @@ export function getInstalledThemes(): ThemeDescriptor[] {
     return contributes?.themes ?? [];
   });
 
-  const lightThemes = installedThemes.filter((theme) => theme.uiTheme === 'vs');
-  const darkThemes = installedThemes.filter(
-    (theme) => theme.uiTheme === 'vs-dark',
+  const lightThemes = sortThemesByName(
+    installedThemes.filter((theme) => theme.uiTheme === 'vs'),
   );
-  const highContrastThemes = installedThemes.filter(
-    (theme) => theme.uiTheme === 'hc-black' || theme.uiTheme === 'hc-light',
+  const darkThemes = sortThemesByName(
+    installedThemes.filter((theme) => theme.uiTheme === 'vs-dark'),
   );
-  const remainingThemes = installedThemes.filter(
-    (theme) =>
-      theme.uiTheme !== 'vs' &&
-      theme.uiTheme !== 'vs-dark' &&
-      theme.uiTheme !== 'hc-black' &&
-      theme.uiTheme !== 'hc-light',
+  const highContrastThemes = sortThemesByName(
+    installedThemes.filter(
+      (theme) => theme.uiTheme === 'hc-black' || theme.uiTheme === 'hc-light',
+    ),
+  );
+  const remainingThemes = sortThemesByName(
+    installedThemes.filter(
+      (theme) =>
+        theme.uiTheme !== 'vs' &&
+        theme.uiTheme !== 'vs-dark' &&
+        theme.uiTheme !== 'hc-black' &&
+        theme.uiTheme !== 'hc-light',
+    ),
   );
 
   const seenThemes = new Set<string>();
