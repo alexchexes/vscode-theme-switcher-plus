@@ -5,6 +5,7 @@ import {
   ContributedTheme,
   CycleCandidateResult,
   CycleDirection,
+  InstalledThemeGroup,
   ThemeDescriptor,
 } from './types';
 
@@ -14,6 +15,22 @@ function isString(value: unknown): value is string {
 
 function resolveContributedThemeName(theme: ContributedTheme): string {
   return theme.id ?? theme.label ?? '';
+}
+
+function resolveInstalledThemeGroup(
+  theme: ContributedTheme,
+): InstalledThemeGroup | undefined {
+  switch (theme.uiTheme) {
+    case 'vs':
+      return 'light';
+    case 'vs-dark':
+      return 'dark';
+    case 'hc-black':
+    case 'hc-light':
+      return 'highContrast';
+    default:
+      return undefined;
+  }
 }
 
 export function getInstalledThemes(): ThemeDescriptor[] {
@@ -28,13 +45,25 @@ export function getInstalledThemes(): ThemeDescriptor[] {
   const darkThemes = installedThemes.filter(
     (theme) => theme.uiTheme === 'vs-dark',
   );
+  const highContrastThemes = installedThemes.filter(
+    (theme) => theme.uiTheme === 'hc-black' || theme.uiTheme === 'hc-light',
+  );
   const remainingThemes = installedThemes.filter(
-    (theme) => theme.uiTheme !== 'vs' && theme.uiTheme !== 'vs-dark',
+    (theme) =>
+      theme.uiTheme !== 'vs' &&
+      theme.uiTheme !== 'vs-dark' &&
+      theme.uiTheme !== 'hc-black' &&
+      theme.uiTheme !== 'hc-light',
   );
 
   const seenThemes = new Set<string>();
 
-  return [...lightThemes, ...darkThemes, ...remainingThemes]
+  return [
+    ...lightThemes,
+    ...darkThemes,
+    ...highContrastThemes,
+    ...remainingThemes,
+  ]
     .filter((theme) => {
       const themeName = resolveContributedThemeName(theme);
       if (!themeName || seenThemes.has(themeName)) {
@@ -50,8 +79,18 @@ export function getInstalledThemes(): ThemeDescriptor[] {
       return {
         name: themeName,
         aliases: new Set([themeName, theme.id, theme.label].filter(isString)),
+        group: resolveInstalledThemeGroup(theme),
       };
     });
+}
+
+export function getInstalledThemeNames(
+  installedThemes: ThemeDescriptor[],
+  group?: InstalledThemeGroup,
+): string[] {
+  return installedThemes
+    .filter((theme) => group === undefined || theme.group === group)
+    .map((theme) => theme.name);
 }
 
 export function normalizeIndex(index: number, length: number): number {

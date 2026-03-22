@@ -1,5 +1,6 @@
 export type ThemeScope = 'auto' | 'global' | 'workspace';
 export type CycleDirection = 'next' | 'previous';
+export type InstalledThemeGroup = 'light' | 'dark' | 'highContrast';
 
 export interface ContributedTheme {
   id?: string;
@@ -10,6 +11,7 @@ export interface ContributedTheme {
 export interface ThemeDescriptor {
   name: string;
   aliases: Set<string>;
+  group?: InstalledThemeGroup;
 }
 
 export interface ThemeList {
@@ -20,6 +22,10 @@ export interface ThemeList {
 
 export interface ScopedCommandArgs {
   scope?: ThemeScope;
+}
+
+export interface InstalledThemeCommandArgs extends ScopedCommandArgs {
+  group?: InstalledThemeGroup;
 }
 
 export interface ThemeListCommandArgs extends ScopedCommandArgs {

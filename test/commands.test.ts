@@ -89,4 +89,62 @@ describe('commands', () => {
       "Theme list 'missing-list' is not configured.",
     );
   });
+
+  it('cycles only inside the requested installed-theme group', async () => {
+    const context = { subscriptions: [] } as unknown as {
+      subscriptions: unknown[];
+    };
+    __setInstalledThemes([
+      { id: 'Solarized Light', uiTheme: 'vs' },
+      { id: 'Dark One', uiTheme: 'vs-dark' },
+      { id: 'Dark Two', uiTheme: 'vs-dark' },
+    ]);
+    __setCurrentTheme('Dark One');
+    __setWorkbenchInspect({ globalValue: 'Dark One' });
+
+    registerCommands(context as never);
+
+    const command = __getRegisteredCommand('themeSwitcher.nextInstalledTheme');
+    await command?.({ group: 'dark' });
+
+    expect(__getUpdateCalls()).toEqual([
+      {
+        key: 'workbench.colorTheme',
+        value: 'Dark Two',
+        target: ConfigurationTarget.Global,
+      },
+    ]);
+  });
+
+  it('warns when an installed-theme group is invalid', async () => {
+    const context = { subscriptions: [] } as unknown as {
+      subscriptions: unknown[];
+    };
+    __setInstalledThemes([{ id: 'Default Dark+', uiTheme: 'vs-dark' }]);
+
+    registerCommands(context as never);
+
+    const command = __getRegisteredCommand('themeSwitcher.nextInstalledTheme');
+    await command?.({ group: 'blue' });
+
+    expect(window.showWarningMessage).toHaveBeenCalledWith(
+      "Invalid installed theme group 'blue'. Use light, dark, or highContrast.",
+    );
+  });
+
+  it('warns when an installed-theme group has no matching themes', async () => {
+    const context = { subscriptions: [] } as unknown as {
+      subscriptions: unknown[];
+    };
+    __setInstalledThemes([{ id: 'Default Dark+', uiTheme: 'vs-dark' }]);
+
+    registerCommands(context as never);
+
+    const command = __getRegisteredCommand('themeSwitcher.nextInstalledTheme');
+    await command?.({ group: 'highContrast' });
+
+    expect(window.showWarningMessage).toHaveBeenCalledWith(
+      'No installed high contrast themes were found.',
+    );
+  });
 });

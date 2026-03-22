@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   findCycleCandidate,
   getInstalledThemes,
+  getInstalledThemeNames,
   normalizeThemeNames,
   resolveRequestedThemeName,
 } from '../src/themes';
@@ -29,14 +30,31 @@ describe('themes', () => {
     __setInstalledThemes([
       { label: 'Monokai', uiTheme: 'vs-dark' },
       { id: 'Solarized Light', uiTheme: 'vs' },
-      { id: 'HC', uiTheme: 'hc-black' },
+      { id: 'HC Black', uiTheme: 'hc-black' },
+      { id: 'HC Light', uiTheme: 'hc-light' },
+      { id: 'Mystery Theme' },
       { id: 'Monokai', label: 'Monokai', uiTheme: 'vs-dark' },
     ]);
 
-    expect(getInstalledThemes().map((theme) => theme.name)).toEqual([
+    const themes = getInstalledThemes();
+
+    expect(themes.map((theme) => theme.name)).toEqual([
       'Solarized Light',
       'Monokai',
-      'HC',
+      'HC Black',
+      'HC Light',
+      'Mystery Theme',
+    ]);
+    expect(themes.map((theme) => theme.group)).toEqual([
+      'light',
+      'dark',
+      'highContrast',
+      'highContrast',
+      undefined,
+    ]);
+    expect(getInstalledThemeNames(themes, 'highContrast')).toEqual([
+      'HC Black',
+      'HC Light',
     ]);
   });
 

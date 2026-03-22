@@ -5,6 +5,7 @@ import { getThemeListById, getThemeLists } from './config';
 import { getConfigurationTarget } from './targets';
 import {
   CycleDirection,
+  InstalledThemeGroup,
   SetThemeArgs,
   ScopedCommandArgs,
   ThemeDescriptor,
@@ -17,6 +18,7 @@ import {
   formatThemeNames,
   getCurrentThemeName,
   getInstalledThemes,
+  getInstalledThemeNames,
   resolveRequestedThemeName,
 } from './themes';
 
@@ -44,6 +46,33 @@ function normalizeListId(listId: unknown): string | undefined {
   return listId.trim();
 }
 
+function normalizeInstalledThemeGroup(
+  group: unknown,
+): InstalledThemeGroup | undefined {
+  if (!isString(group)) {
+    return undefined;
+  }
+
+  const normalizedGroup = group.trim().toLowerCase();
+  if (normalizedGroup === 'light') {
+    return 'light';
+  }
+
+  if (normalizedGroup === 'dark') {
+    return 'dark';
+  }
+
+  if (
+    normalizedGroup === 'highcontrast' ||
+    normalizedGroup === 'high-contrast' ||
+    normalizedGroup === 'high contrast'
+  ) {
+    return 'highContrast';
+  }
+
+  return undefined;
+}
+
 function parseSetThemeArgs(args: unknown): SetThemeArgs {
   if (isString(args)) {
     return {
@@ -64,15 +93,30 @@ function parseSetThemeArgs(args: unknown): SetThemeArgs {
   };
 }
 
-function parseScopedCommandArgs(args: unknown): Required<ScopedCommandArgs> {
+function parseInstalledThemeCommandArgs(
+  args: unknown,
+): Required<ScopedCommandArgs> & {
+  group?: InstalledThemeGroup;
+  invalidGroup?: string;
+} {
   if (!isRecord(args)) {
     return {
       scope: 'auto',
     };
   }
 
+  const rawGroup = args.group;
+  const normalizedGroup = normalizeInstalledThemeGroup(rawGroup);
+
   return {
     scope: normalizeScope(args.scope),
+    group: normalizedGroup,
+    invalidGroup:
+      rawGroup !== undefined &&
+      normalizedGroup === undefined &&
+      isString(rawGroup)
+        ? rawGroup.trim()
+        : undefined,
   };
 }
 
@@ -92,12 +136,23 @@ function parseThemeListCommandArgs(
   };
 }
 
-function getInstalledThemeNames(installedThemes: ThemeDescriptor[]): string[] {
-  return installedThemes.map((theme) => theme.name);
-}
-
 function getThemeListSourceLabel(themeList: ThemeList): string {
   return `theme list '${themeList.id}'`;
+}
+
+function getInstalledThemeSourceLabel(group?: InstalledThemeGroup): string {
+  if (group === undefined) {
+    return 'installed themes';
+  }
+
+  switch (group) {
+    case 'light':
+      return 'installed light themes';
+    case 'dark':
+      return 'installed dark themes';
+    case 'highContrast':
+      return 'installed high contrast themes';
+  }
 }
 
 function showSkippedThemesWarning(skippedThemes: readonly string[]): void {
@@ -233,12 +288,21 @@ async function nextOrPreviousInstalledThemeCommand(
   direction: CycleDirection,
   args: unknown,
 ): Promise<void> {
-  const { scope } = parseScopedCommandArgs(args);
+  const { scope, group, invalidGroup } = parseInstalledThemeCommandArgs(args);
+  if (invalidGroup) {
+    void vscode.window.showWarningMessage(
+      `Invalid installed theme group '${invalidGroup}'. Use light, dark, or highContrast.`,
+    );
+    return;
+  }
+
   const installedThemes = getInstalledThemes();
-  const themeNames = getInstalledThemeNames(installedThemes);
+  const themeNames = getInstalledThemeNames(installedThemes, group);
 
   if (themeNames.length === 0) {
-    void vscode.window.showWarningMessage('No installed themes were found.');
+    void vscode.window.showWarningMessage(
+      `No ${getInstalledThemeSourceLabel(group)} were found.`,
+    );
     return;
   }
 
@@ -247,7 +311,7 @@ async function nextOrPreviousInstalledThemeCommand(
     direction,
     scope,
     installedThemes,
-    'installed themes',
+    getInstalledThemeSourceLabel(group),
   );
 }
 

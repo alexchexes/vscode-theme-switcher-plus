@@ -59,6 +59,19 @@ Use `themeSwitcher.nextThemeInList` or `themeSwitcher.previousThemeInList` to cy
 }
 ```
 
+Use `themeSwitcher.nextInstalledTheme` or `themeSwitcher.previousInstalledTheme` with `group` to cycle a built-in VS Code theme group:
+
+```jsonc
+{
+  "key": "ctrl+alt+3",
+  "command": "themeSwitcher.nextInstalledTheme",
+  "args": {
+    "group": "dark", // omit to cycle through all themes
+    "scope": "global", // default is `auto`
+  },
+}
+```
+
 `scope: "auto"` means:
 
 - if `workbench.colorTheme` is already set in workspace settings, update workspace
@@ -67,6 +80,7 @@ Use `themeSwitcher.nextThemeInList` or `themeSwitcher.previousThemeInList` to cy
 
 Supported values:
 
+- `group`: `light`, `dark`, `highContrast` for installed-theme commands
 - `listId`: any configured list id; omit it in list commands to pick a list from the Command Palette
 - `scope`: `auto`, `global`, `workspace`
 
