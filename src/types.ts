@@ -18,10 +18,12 @@ export interface ThemeList {
   themes: string[];
 }
 
-export interface CycleThemesArgs {
-  listId?: string;
-  direction?: CycleDirection;
+export interface ScopedCommandArgs {
   scope?: ThemeScope;
+}
+
+export interface ThemeListCommandArgs extends ScopedCommandArgs {
+  listId?: string;
 }
 
 export interface SetThemeArgs {

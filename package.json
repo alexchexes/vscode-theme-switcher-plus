@@ -62,8 +62,13 @@
         "category": "Theme Switcher+"
       },
       {
-        "command": "themeSwitcher.cycleThemes",
-        "title": "Cycle Themes",
+        "command": "themeSwitcher.nextThemeInList",
+        "title": "Next Theme In List",
+        "category": "Theme Switcher+"
+      },
+      {
+        "command": "themeSwitcher.previousThemeInList",
+        "title": "Previous Theme In List",
         "category": "Theme Switcher+"
       },
       {
@@ -100,7 +105,7 @@
             "properties": {
               "id": {
                 "type": "string",
-                "markdownDescription": "Stable list identifier used in `themeSwitcher.cycleThemes` args."
+                "markdownDescription": "Stable list identifier used in `themeSwitcher.nextThemeInList` and `themeSwitcher.previousThemeInList` args."
               },
               "themes": {
                 "type": "array",
@@ -113,7 +118,7 @@
             },
             "additionalProperties": false
           },
-          "markdownDescription": "Ordered custom theme lists. Use each list `id` with `themeSwitcher.cycleThemes`."
+          "markdownDescription": "Ordered custom theme lists. Use each list `id` with `themeSwitcher.nextThemeInList` or `themeSwitcher.previousThemeInList`."
         }
       }
     }

@@ -33,35 +33,39 @@ Configure custom lists with:
 
 Use `themeSwitcher.setTheme` to switch directly to a theme:
 
-```json
+```jsonc
 {
   "key": "ctrl+alt+1",
   "command": "themeSwitcher.setTheme",
   "args": {
     "theme": "Default Dark+",
-    "scope": "global"
+    "scope": "global" // default is `auto`
   }
 }
 ```
 
-Use `themeSwitcher.cycleThemes` to cycle a specific configured list:
+Use `themeSwitcher.nextThemeInList` or `themeSwitcher.previousThemeInList` to cycle a specific configured list:
 
-```json
+```jsonc
 {
   "key": "ctrl+alt+2",
-  "command": "themeSwitcher.cycleThemes",
+  "command": "themeSwitcher.nextThemeInList",
   "args": {
     "listId": "grammar-check",
-    "direction": "next",
-    "scope": "global"
+    "scope": "global" // default is `auto`
   }
 }
 ```
+
+`scope: "auto"` means:
+
+- if `workbench.colorTheme` is already set in workspace settings, update workspace
+- if it is already set in global settings, update global
+- if it is unset, use workspace when a workspace is open, otherwise use global
 
 Supported values:
 
-- `listId`: any configured list id; omit it to cycle installed themes
-- `direction`: `next`, `previous`
+- `listId`: any configured list id; omit it in list commands to pick a list from the Command Palette
 - `scope`: `auto`, `global`, `workspace`
 
 ## Development

@@ -1,14 +1,15 @@
 import * as vscode from 'vscode';
 
 import { EXTENSION_PREFIX } from './constants';
-import { getThemeListById } from './config';
+import { getThemeListById, getThemeLists } from './config';
 import { getConfigurationTarget } from './targets';
 import {
   CycleDirection,
-  CycleThemesArgs,
   SetThemeArgs,
+  ScopedCommandArgs,
   ThemeDescriptor,
   ThemeList,
+  ThemeListCommandArgs,
   ThemeScope,
 } from './types';
 import {
@@ -43,30 +44,6 @@ function normalizeListId(listId: unknown): string | undefined {
   return listId.trim();
 }
 
-function normalizeDirection(direction: unknown): CycleDirection {
-  if (direction === 'previous') {
-    return 'previous';
-  }
-
-  return 'next';
-}
-
-function parseCycleThemesArgs(args: unknown): Required<CycleThemesArgs> {
-  if (!isRecord(args)) {
-    return {
-      listId: '',
-      direction: 'next',
-      scope: 'auto',
-    };
-  }
-
-  return {
-    listId: normalizeListId(args.listId) ?? '',
-    direction: normalizeDirection(args.direction),
-    scope: normalizeScope(args.scope),
-  };
-}
-
 function parseSetThemeArgs(args: unknown): SetThemeArgs {
   if (isString(args)) {
     return {
@@ -87,28 +64,38 @@ function parseSetThemeArgs(args: unknown): SetThemeArgs {
   };
 }
 
+function parseScopedCommandArgs(args: unknown): Required<ScopedCommandArgs> {
+  if (!isRecord(args)) {
+    return {
+      scope: 'auto',
+    };
+  }
+
+  return {
+    scope: normalizeScope(args.scope),
+  };
+}
+
+function parseThemeListCommandArgs(args: unknown): Required<ThemeListCommandArgs> {
+  if (!isRecord(args)) {
+    return {
+      listId: '',
+      scope: 'auto',
+    };
+  }
+
+  return {
+    listId: normalizeListId(args.listId) ?? '',
+    scope: normalizeScope(args.scope),
+  };
+}
+
 function getInstalledThemeNames(installedThemes: ThemeDescriptor[]): string[] {
   return installedThemes.map((theme) => theme.name);
 }
 
-function getEmptyThemeNamesMessage(listId: string, themeList: ThemeList | undefined): string {
-  if (!listId) {
-    return 'No installed themes were found.';
-  }
-
-  if (!themeList) {
-    return `Theme list '${listId}' is not configured.`;
-  }
-
-  return `Theme list '${themeList.id}' has no themes configured.`;
-}
-
-function getThemeSourceLabel(listId: string, themeList: ThemeList | undefined): string {
-  if (!listId) {
-    return 'installed themes';
-  }
-
-  return themeList ? `theme list '${themeList.id}'` : `theme list '${listId}'`;
+function getThemeListSourceLabel(themeList: ThemeList): string {
+  return `theme list '${themeList.id}'`;
 }
 
 function showSkippedThemesWarning(skippedThemes: readonly string[]): void {
@@ -129,6 +116,31 @@ function showAllThemesMissingWarning(sourceLabel: string, missingThemes: readonl
   void vscode.window.showWarningMessage(
     `None of the themes in the ${sourceLabel} are installed.${details}`,
   );
+}
+
+async function pickThemeList(installedThemes: ThemeDescriptor[]): Promise<ThemeList | undefined> {
+  const themeLists = getThemeLists(installedThemes);
+  if (themeLists.length === 0) {
+    void vscode.window.showWarningMessage('No theme lists are configured.');
+    return undefined;
+  }
+
+  const pickedThemeList = await vscode.window.showQuickPick(
+    themeLists.map((themeList) => ({
+      label: themeList.id,
+      description: `${themeList.themes.length} theme${themeList.themes.length === 1 ? '' : 's'}`,
+    })),
+    {
+      placeHolder: 'Select a theme list',
+      title: 'Theme Switcher+',
+    },
+  );
+
+  if (!pickedThemeList) {
+    return undefined;
+  }
+
+  return themeLists.find((themeList) => themeList.id === pickedThemeList.label);
 }
 
 async function pickTheme(installedThemes: ThemeDescriptor[]): Promise<string | undefined> {
@@ -175,17 +187,13 @@ async function setThemeByName(
   void vscode.window.showInformationMessage(resolvedThemeName);
 }
 
-async function cycleThemesCommand(args: unknown): Promise<void> {
-  const { listId, direction, scope } = parseCycleThemesArgs(args);
-  const installedThemes = getInstalledThemes();
-  const themeList = listId ? getThemeListById(listId, installedThemes) : undefined;
-  const themeNames = themeList ? themeList.themes : getInstalledThemeNames(installedThemes);
-
-  if (themeNames.length === 0) {
-    void vscode.window.showWarningMessage(getEmptyThemeNamesMessage(listId, themeList));
-    return;
-  }
-
+async function cycleThemeNames(
+  themeNames: readonly string[],
+  direction: CycleDirection,
+  scope: ThemeScope,
+  installedThemes: ThemeDescriptor[],
+  sourceLabel: string,
+): Promise<void> {
   const currentThemeName = getCurrentThemeName(installedThemes);
   const currentIndex = themeNames.indexOf(currentThemeName);
   const { resolvedThemeName, skippedThemes } = findCycleCandidate(
@@ -196,12 +204,60 @@ async function cycleThemesCommand(args: unknown): Promise<void> {
   );
 
   if (!resolvedThemeName) {
-    showAllThemesMissingWarning(getThemeSourceLabel(listId, themeList), skippedThemes);
+    showAllThemesMissingWarning(sourceLabel, skippedThemes);
     return;
   }
 
   await setThemeByName(resolvedThemeName, scope, installedThemes);
   showSkippedThemesWarning(skippedThemes);
+}
+
+async function nextOrPreviousInstalledThemeCommand(
+  direction: CycleDirection,
+  args: unknown,
+): Promise<void> {
+  const { scope } = parseScopedCommandArgs(args);
+  const installedThemes = getInstalledThemes();
+  const themeNames = getInstalledThemeNames(installedThemes);
+
+  if (themeNames.length === 0) {
+    void vscode.window.showWarningMessage('No installed themes were found.');
+    return;
+  }
+
+  await cycleThemeNames(themeNames, direction, scope, installedThemes, 'installed themes');
+}
+
+async function nextOrPreviousThemeInListCommand(
+  direction: CycleDirection,
+  args: unknown,
+): Promise<void> {
+  const installedThemes = getInstalledThemes();
+  const { listId, scope } = parseThemeListCommandArgs(args);
+  const themeList = listId
+    ? getThemeListById(listId, installedThemes)
+    : await pickThemeList(installedThemes);
+
+  if (!themeList) {
+    if (listId) {
+      void vscode.window.showWarningMessage(`Theme list '${listId}' is not configured.`);
+    }
+
+    return;
+  }
+
+  if (themeList.themes.length === 0) {
+    void vscode.window.showWarningMessage(`Theme list '${themeList.id}' has no themes configured.`);
+    return;
+  }
+
+  await cycleThemeNames(
+    themeList.themes,
+    direction,
+    scope,
+    installedThemes,
+    getThemeListSourceLabel(themeList),
+  );
 }
 
 async function setThemeCommand(args: unknown): Promise<void> {
@@ -224,23 +280,31 @@ function registerCommand(
   context.subscriptions.push(vscode.commands.registerCommand(command, callback));
 }
 
-function registerCycleCommand(
+function registerInstalledThemeCommand(
   context: vscode.ExtensionContext,
   command: string,
   direction: CycleDirection,
 ): void {
-  registerCommand(context, command, async () => {
-    await cycleThemesCommand({ direction, scope: 'auto' });
+  registerCommand(context, command, async (args?: unknown) => {
+    await nextOrPreviousInstalledThemeCommand(direction, args);
+  });
+}
+
+function registerThemeListCommand(
+  context: vscode.ExtensionContext,
+  command: string,
+  direction: CycleDirection,
+): void {
+  registerCommand(context, command, async (args?: unknown) => {
+    await nextOrPreviousThemeInListCommand(direction, args);
   });
 }
 
 export function registerCommands(context: vscode.ExtensionContext): void {
-  registerCycleCommand(context, `${EXTENSION_PREFIX}.nextInstalledTheme`, 'next');
-  registerCycleCommand(context, `${EXTENSION_PREFIX}.previousInstalledTheme`, 'previous');
-
-  registerCommand(context, `${EXTENSION_PREFIX}.cycleThemes`, async (args?: unknown) => {
-    await cycleThemesCommand(args);
-  });
+  registerInstalledThemeCommand(context, `${EXTENSION_PREFIX}.nextInstalledTheme`, 'next');
+  registerInstalledThemeCommand(context, `${EXTENSION_PREFIX}.previousInstalledTheme`, 'previous');
+  registerThemeListCommand(context, `${EXTENSION_PREFIX}.nextThemeInList`, 'next');
+  registerThemeListCommand(context, `${EXTENSION_PREFIX}.previousThemeInList`, 'previous');
 
   registerCommand(context, `${EXTENSION_PREFIX}.setTheme`, async (args?: unknown) => {
     await setThemeCommand(args);
