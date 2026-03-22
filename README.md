@@ -12,6 +12,8 @@ You can configure shortcuts to:
 - switch to a specific theme
 - apply any of the above either globally or only in the current workspace
 
+![](https://raw.githubusercontent.com/alexchexes/vscode-theme-switcher-plus/master/images/animation.gif)
+
 ## Quick start
 
 1. Add theme lists to your [user or workspace](https://code.visualstudio.com/docs/configure/settings) VS Code `settings.json`:
@@ -147,5 +149,3 @@ Package and install the current VSIX into local VS Code with:
 ```bash
 pnpm run install-local
 ```
-
-![](https://raw.githubusercontent.com/alexchexes/vscode-theme-switcher-plus/master/images/animation.gif)

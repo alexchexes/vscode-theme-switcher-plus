@@ -2,11 +2,11 @@
   "name": "theme-switcher-plus",
   "displayName": "Theme Switcher+",
   "description": "Use hotkeys to change themes or cycle through theme lists.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "AlexChexes",
   "icon": "images/icon.png",
   "galleryBanner": {
-    "color": "#947500",
+    "color": "#1f1f1f",
     "theme": "dark"
   },
   "repository": {
