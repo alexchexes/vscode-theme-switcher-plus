@@ -20,9 +20,14 @@ function normalizeListId(listId: string): string {
   return listId.trim().toLowerCase();
 }
 
-export function getThemeLists(installedThemes: ThemeDescriptor[]): ThemeList[] {
-  const config = getExtensionConfig();
-  const rawThemeLists = config.get<unknown[]>(THEME_LISTS_KEY, []);
+function parseThemeLists(
+  rawThemeLists: unknown,
+  installedThemes: ThemeDescriptor[],
+): ThemeList[] {
+  if (!Array.isArray(rawThemeLists)) {
+    return [];
+  }
+
   const themeLists: ThemeList[] = [];
   const seenListIds = new Set<string>();
 
@@ -51,6 +56,53 @@ export function getThemeLists(installedThemes: ThemeDescriptor[]): ThemeList[] {
   }
 
   return themeLists;
+}
+
+function mergeThemeLists(
+  currentThemeLists: ThemeList[],
+  nextThemeLists: readonly ThemeList[],
+): ThemeList[] {
+  const mergedThemeLists = [...currentThemeLists];
+  const themeListIndexById = new Map(
+    mergedThemeLists.map((themeList, index) => [themeList.normalizedId, index]),
+  );
+
+  for (const themeList of nextThemeLists) {
+    const existingIndex = themeListIndexById.get(themeList.normalizedId);
+
+    if (existingIndex === undefined) {
+      themeListIndexById.set(themeList.normalizedId, mergedThemeLists.length);
+      mergedThemeLists.push(themeList);
+      continue;
+    }
+
+    mergedThemeLists[existingIndex] = themeList;
+  }
+
+  return mergedThemeLists;
+}
+
+export function getThemeLists(installedThemes: ThemeDescriptor[]): ThemeList[] {
+  const config = getExtensionConfig();
+  const themeListsConfig = config.inspect<unknown[]>(THEME_LISTS_KEY);
+
+  const globalThemeLists = parseThemeLists(
+    themeListsConfig?.globalValue,
+    installedThemes,
+  );
+  const workspaceThemeLists = parseThemeLists(
+    themeListsConfig?.workspaceValue,
+    installedThemes,
+  );
+  const workspaceFolderThemeLists = parseThemeLists(
+    themeListsConfig?.workspaceFolderValue,
+    installedThemes,
+  );
+
+  return mergeThemeLists(
+    mergeThemeLists(globalThemeLists, workspaceThemeLists),
+    workspaceFolderThemeLists,
+  );
 }
 
 export function getThemeListById(

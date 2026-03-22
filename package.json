@@ -154,7 +154,7 @@
             },
             "additionalProperties": false
           },
-          "markdownDescription": "Ordered custom theme lists. Use each list `id` with `themeSwitcher.nextThemeInList`, `themeSwitcher.previousThemeInList`, or `themeSwitcher.randomThemeInList`."
+          "markdownDescription": "Ordered custom theme lists. User and workspace lists are merged, and workspace lists override matching `id` values. Use each list `id` with `themeSwitcher.nextThemeInList`, `themeSwitcher.previousThemeInList`, or `themeSwitcher.randomThemeInList`."
         }
       }
     }

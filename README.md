@@ -36,6 +36,8 @@ You can configure shortcuts to:
 ]
 ```
 
+If you define `themeSwitcher.themeLists` in both user settings and workspace settings, the lists are merged. Workspace lists override user lists with the same `id`.
+
 2. Add shortcuts in `keybindings.json`:
 
 ```jsonc
@@ -61,7 +63,7 @@ You can configure shortcuts to:
 {
   "key": "ctrl+shift+f1",
   "command": "themeSwitcher.setTheme",
-  "args": { "theme": "Default Dark+" }
+  "args": { "theme": "Default Dark Modern" }
 },
 
 // Cycle through installed themes:

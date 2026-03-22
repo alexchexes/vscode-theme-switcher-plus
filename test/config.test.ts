@@ -2,7 +2,11 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { getThemeListById, getThemeLists } from '../src/config';
 import type { ThemeDescriptor } from '../src/types';
-import { __resetMockVscode, __setExtensionConfig } from './mocks/vscode';
+import {
+  __resetMockVscode,
+  __setExtensionConfig,
+  __setExtensionInspect,
+} from './mocks/vscode';
 
 const installedThemes: ThemeDescriptor[] = [
   {
@@ -79,5 +83,48 @@ describe('config', () => {
       normalizedId: 'grammar check',
       themes: ['Monokai'],
     });
+  });
+
+  it('merges global and workspace theme lists, with workspace overriding matching ids', () => {
+    __setExtensionInspect({
+      globalValue: [
+        {
+          id: 'Favorites',
+          themes: ['Default Dark+'],
+        },
+        {
+          id: 'Light',
+          themes: ['Missing Theme'],
+        },
+      ],
+      workspaceValue: [
+        {
+          id: 'Favorites',
+          themes: ['Monokai'],
+        },
+        {
+          id: 'Project',
+          themes: ['Dark+'],
+        },
+      ],
+    });
+
+    expect(getThemeLists(installedThemes)).toEqual([
+      {
+        id: 'Favorites',
+        normalizedId: 'favorites',
+        themes: ['Monokai'],
+      },
+      {
+        id: 'Light',
+        normalizedId: 'light',
+        themes: ['Missing Theme'],
+      },
+      {
+        id: 'Project',
+        normalizedId: 'project',
+        themes: ['Default Dark+'],
+      },
+    ]);
   });
 });

@@ -23,6 +23,7 @@ type QuickPickSelection = string | QuickPickItem | undefined;
 const state = {
   currentTheme: '',
   extensionConfig: {} as Record<string, unknown>,
+  extensionInspect: {} as ConfigurationInspect<unknown[]>,
   installedThemes: [] as MockTheme[],
   quickPickSelection: undefined as QuickPickSelection,
   registeredCommands: new Map<string, (...args: unknown[]) => Promise<void>>(),
@@ -72,7 +73,9 @@ function createExtensionConfiguration() {
     get: vi.fn(<T>(key: string, defaultValue?: T): T => {
       return (state.extensionConfig[key] ?? defaultValue) as T;
     }),
-    inspect: vi.fn(() => undefined),
+    inspect: vi.fn(<T>(_key: string): ConfigurationInspect<T> | undefined => {
+      return state.extensionInspect as ConfigurationInspect<T>;
+    }),
     update: vi.fn(async () => undefined),
   };
 }
@@ -165,6 +168,7 @@ export function __getUpdateCalls(): {
 export function __resetMockVscode(): void {
   state.currentTheme = '';
   state.extensionConfig = {};
+  state.extensionInspect = {};
   state.installedThemes = [];
   state.quickPickSelection = undefined;
   state.registeredCommands.clear();
@@ -186,6 +190,15 @@ export function __setCurrentTheme(themeName: string): void {
 
 export function __setExtensionConfig(config: Record<string, unknown>): void {
   state.extensionConfig = config;
+  state.extensionInspect = {
+    globalValue: config.themeLists as unknown[] | undefined,
+  };
+}
+
+export function __setExtensionInspect(
+  inspect: ConfigurationInspect<unknown[]>,
+): void {
+  state.extensionInspect = inspect;
 }
 
 export function __setInstalledThemes(themes: MockTheme[]): void {
