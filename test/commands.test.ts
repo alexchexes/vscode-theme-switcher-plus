@@ -21,7 +21,9 @@ describe('commands', () => {
   });
 
   it('registers the public command surface', () => {
-    const context = { subscriptions: [] } as unknown as { subscriptions: unknown[] };
+    const context = { subscriptions: [] } as unknown as {
+      subscriptions: unknown[];
+    };
 
     registerCommands(context as never);
 
@@ -36,7 +38,9 @@ describe('commands', () => {
   });
 
   it('cycles the next theme from a picked list using auto scope', async () => {
-    const context = { subscriptions: [] } as unknown as { subscriptions: unknown[] };
+    const context = { subscriptions: [] } as unknown as {
+      subscriptions: unknown[];
+    };
     __setInstalledThemes([
       { id: 'Default Dark+', uiTheme: 'vs-dark' },
       { id: 'Monokai', uiTheme: 'vs-dark' },
@@ -71,7 +75,9 @@ describe('commands', () => {
   });
 
   it('warns when a requested list id is not configured', async () => {
-    const context = { subscriptions: [] } as unknown as { subscriptions: unknown[] };
+    const context = { subscriptions: [] } as unknown as {
+      subscriptions: unknown[];
+    };
     __setInstalledThemes([{ id: 'Default Dark+', uiTheme: 'vs-dark' }]);
 
     registerCommands(context as never);

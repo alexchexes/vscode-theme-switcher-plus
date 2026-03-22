@@ -8,17 +8,26 @@ const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 const packageJsonPath = join(rootDir, 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-const vsixPath = join(rootDir, `${packageJson.name}-${packageJson.version}.vsix`);
+const vsixPath = join(
+  rootDir,
+  `${packageJson.name}-${packageJson.version}.vsix`,
+);
 const codeCli = process.platform === 'win32' ? 'code.cmd' : 'code';
 
-const result = spawnSync(codeCli, ['--install-extension', vsixPath, '--force'], {
-  cwd: rootDir,
-  shell: process.platform === 'win32',
-  stdio: 'inherit',
-});
+const result = spawnSync(
+  codeCli,
+  ['--install-extension', vsixPath, '--force'],
+  {
+    cwd: rootDir,
+    shell: process.platform === 'win32',
+    stdio: 'inherit',
+  },
+);
 
 if (result.error) {
-  console.error(`Failed to run ${codeCli}. Make sure the VS Code 'code' CLI is installed and on PATH.`);
+  console.error(
+    `Failed to run ${codeCli}. Make sure the VS Code 'code' CLI is installed and on PATH.`,
+  );
   console.error(result.error.message);
   process.exit(1);
 }

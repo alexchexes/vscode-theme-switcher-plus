@@ -7,9 +7,11 @@ Theme Switcher+ can cycle through all installed themes or any configured theme l
 ## Default shortcuts
 
 #### Previous installed theme - `Ctrl+Shift+F11`
+
 Finds the previous installed theme and selects it.
 
 #### Next installed theme - `Ctrl+Shift+F12`
+
 Finds the next installed theme and selects it.
 
 ## Settings
@@ -39,8 +41,8 @@ Use `themeSwitcher.setTheme` to switch directly to a theme:
   "command": "themeSwitcher.setTheme",
   "args": {
     "theme": "Default Dark+",
-    "scope": "global" // default is `auto`
-  }
+    "scope": "global", // default is `auto`
+  },
 }
 ```
 
@@ -52,8 +54,8 @@ Use `themeSwitcher.nextThemeInList` or `themeSwitcher.previousThemeInList` to cy
   "command": "themeSwitcher.nextThemeInList",
   "args": {
     "listId": "grammar-check",
-    "scope": "global" // default is `auto`
-  }
+    "scope": "global", // default is `auto`
+  },
 }
 ```
 

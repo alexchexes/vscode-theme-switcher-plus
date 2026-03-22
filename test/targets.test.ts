@@ -18,7 +18,9 @@ describe('targets', () => {
     __setWorkspaceFolders([{ name: 'workspace' }]);
 
     expect(getConfigurationTarget('global')).toBe(ConfigurationTarget.Global);
-    expect(getConfigurationTarget('workspace')).toBe(ConfigurationTarget.Workspace);
+    expect(getConfigurationTarget('workspace')).toBe(
+      ConfigurationTarget.Workspace,
+    );
   });
 
   it('warns when workspace scope is requested without an open workspace', () => {

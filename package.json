@@ -2,9 +2,9 @@
   "name": "theme-switcher-plus",
   "displayName": "Theme Switcher+",
   "description": "Use hotkeys to change themes or cycle through theme lists.",
+  "version": "0.3.0",
   "publisher": "AlexChexes",
   "icon": "images/icon.png",
-  "version": "0.3.0",
   "galleryBanner": {
     "color": "#947500",
     "theme": "dark"
@@ -49,6 +49,32 @@
     "README.md",
     "LICENSE"
   ],
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "test": "vitest run --config vitest.config.mjs",
+    "test:watch": "vitest --config vitest.config.mjs",
+    "test:typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run compile && pnpm run test && pnpm run test:typecheck",
+    "package": "pnpm exec vsce package --no-dependencies",
+    "install-local": "pnpm run package && node scripts/install-local.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@stylistic/eslint-plugin": "^2.9.0",
+    "@types/node": "^25.5.0",
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "^3.7.1",
+    "eslint": "^9.13.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.39.0",
+    "vitest": "^4.1.0"
+  },
   "contributes": {
     "commands": [
       {
@@ -122,28 +148,5 @@
         }
       }
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "pnpm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "lint": "eslint .",
-    "test": "vitest run --config vitest.config.mjs",
-    "test:watch": "vitest --config vitest.config.mjs",
-    "test:typecheck": "tsc -p tsconfig.test.json --noEmit",
-    "check": "pnpm run lint && pnpm run compile && pnpm run test && pnpm run test:typecheck",
-    "package": "pnpm exec vsce package --no-dependencies",
-    "install-local": "pnpm run package && node scripts/install-local.mjs"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.13.0",
-    "@stylistic/eslint-plugin": "^2.9.0",
-    "@types/node": "^25.5.0",
-    "@types/vscode": "^1.100.0",
-    "@vscode/vsce": "^3.7.1",
-    "eslint": "^9.13.0",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.39.0",
-    "vitest": "^4.1.0"
   }
 }

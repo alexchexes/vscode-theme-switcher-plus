@@ -26,7 +26,10 @@ export default tseslint.config(
     rules: {
       curly: 'warn',
       '@stylistic/semi': ['warn', 'always'],
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
     },
   },
 );

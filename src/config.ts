@@ -58,5 +58,7 @@ export function getThemeListById(
   installedThemes: ThemeDescriptor[],
 ): ThemeList | undefined {
   const normalizedId = normalizeListId(listId);
-  return getThemeLists(installedThemes).find((themeList) => themeList.normalizedId === normalizedId);
+  return getThemeLists(installedThemes).find(
+    (themeList) => themeList.normalizedId === normalizedId,
+  );
 }

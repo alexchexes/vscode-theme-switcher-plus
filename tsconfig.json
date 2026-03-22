@@ -3,22 +3,13 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "ES2024",
-    "lib": [
-      "ES2024"
-    ],
+    "lib": ["ES2024"],
     "outDir": "out",
     "sourceMap": true,
     "strict": true,
     "rootDir": "src",
-    "types": [
-      "vscode"
-    ]
+    "types": ["vscode"]
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    ".vscode-test"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", ".vscode-test"]
 }

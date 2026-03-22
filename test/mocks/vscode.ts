@@ -83,10 +83,12 @@ export const ConfigurationTarget = {
 } as const;
 
 export const commands = {
-  registerCommand: vi.fn((command: string, callback: (...args: unknown[]) => Promise<void>) => {
-    state.registeredCommands.set(command, callback);
-    return createDisposable();
-  }),
+  registerCommand: vi.fn(
+    (command: string, callback: (...args: unknown[]) => Promise<void>) => {
+      state.registeredCommands.set(command, callback);
+      return createDisposable();
+    },
+  ),
 };
 
 export const extensions = {
@@ -149,7 +151,11 @@ export function __getRegisteredCommandIds(): string[] {
   return [...state.registeredCommands.keys()];
 }
 
-export function __getUpdateCalls(): { key: string; value: unknown; target: unknown }[] {
+export function __getUpdateCalls(): {
+  key: string;
+  value: unknown;
+  target: unknown;
+}[] {
   return [...state.updateCalls];
 }
 
@@ -186,10 +192,14 @@ export function __setQuickPickSelection(selection: QuickPickSelection): void {
   state.quickPickSelection = selection;
 }
 
-export function __setWorkbenchInspect(inspect: ConfigurationInspect<string>): void {
+export function __setWorkbenchInspect(
+  inspect: ConfigurationInspect<string>,
+): void {
   state.workbenchInspect = inspect;
 }
 
-export function __setWorkspaceFolders(workspaceFolders: { name: string }[] | undefined): void {
+export function __setWorkspaceFolders(
+  workspaceFolders: { name: string }[] | undefined,
+): void {
   state.workspaceFolders = workspaceFolders;
 }

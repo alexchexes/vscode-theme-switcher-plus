@@ -41,12 +41,16 @@ describe('themes', () => {
   });
 
   it('resolves aliases and deduplicates normalized theme names', () => {
-    expect(resolveRequestedThemeName('Dark+', installedThemes)).toBe('Default Dark+');
-
-    expect(normalizeThemeNames([' Dark+ ', 'Default Dark+', '', 'Monokai'], installedThemes)).toEqual([
+    expect(resolveRequestedThemeName('Dark+', installedThemes)).toBe(
       'Default Dark+',
-      'Monokai',
-    ]);
+    );
+
+    expect(
+      normalizeThemeNames(
+        [' Dark+ ', 'Default Dark+', '', 'Monokai'],
+        installedThemes,
+      ),
+    ).toEqual(['Default Dark+', 'Monokai']);
   });
 
   it('cycles past missing themes and wraps around the list', () => {

@@ -15,7 +15,9 @@ export function getConfigurationTarget(
       return vscode.ConfigurationTarget.Workspace;
     }
 
-    void vscode.window.showWarningMessage('Open a workspace to use scope=workspace.');
+    void vscode.window.showWarningMessage(
+      'Open a workspace to use scope=workspace.',
+    );
     return undefined;
   }
 
