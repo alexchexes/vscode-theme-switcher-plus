@@ -128,8 +128,7 @@ For `themeSwitcher.setTheme`:
 How `scope: "auto"` works:
 
 - if `workbench.colorTheme` is already set in workspace settings, update workspace settings
-- if it is already set in global settings, update global settings
-- if it is unset, use workspace settings when a workspace is open; otherwise use global settings
+- otherwise, update global settings
 
 ## Development
 

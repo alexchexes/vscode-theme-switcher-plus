@@ -32,13 +32,5 @@ function getAutoConfigurationTarget(): vscode.ConfigurationTarget {
     return vscode.ConfigurationTarget.Workspace;
   }
 
-  if (info?.globalValue !== undefined) {
-    return vscode.ConfigurationTarget.Global;
-  }
-
-  if (vscode.workspace.workspaceFolders?.length) {
-    return vscode.ConfigurationTarget.Workspace;
-  }
-
   return vscode.ConfigurationTarget.Global;
 }

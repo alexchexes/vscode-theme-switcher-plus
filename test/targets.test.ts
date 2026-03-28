@@ -42,10 +42,10 @@ describe('targets', () => {
     expect(getConfigurationTarget('auto')).toBe(ConfigurationTarget.Global);
   });
 
-  it('falls back to workspace when auto is unset and a workspace is open', () => {
+  it('falls back to global when auto is unset and a workspace is open', () => {
     __setWorkspaceFolders([{ name: 'workspace' }]);
 
-    expect(getConfigurationTarget('auto')).toBe(ConfigurationTarget.Workspace);
+    expect(getConfigurationTarget('auto')).toBe(ConfigurationTarget.Global);
   });
 
   it('falls back to global when auto is unset and no workspace is open', () => {
