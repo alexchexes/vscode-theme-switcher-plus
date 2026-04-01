@@ -13,6 +13,9 @@
     "type": "git",
     "url": "https://github.com/alexchexes/vscode-theme-switcher-plus"
   },
+  "bugs": {
+    "url": "https://github.com/alexchexes/vscode-theme-switcher-plus/issues"
+  },
   "engines": {
     "vscode": "^1.100.0"
   },
